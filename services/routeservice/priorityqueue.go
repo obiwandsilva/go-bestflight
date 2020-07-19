@@ -1,8 +1,7 @@
-package main
+package routeservice
 
 import (
 	"container/heap"
-	"fmt"
 )
 
 // An Item is something we manage in a priority queue.
@@ -68,53 +67,4 @@ func (pq *PriorityQueue) getItemReferenceByNode(node int) *Item {
 	}
 
 	return nil
-}
-
-func main() {
-	pq := NewPriorityQueue()
-
-	item := &Item{
-		node:     0,
-		priority: 0,
-	}
-
-	item2 := &Item{
-		node:     1,
-		priority: 75,
-	}
-
-	item3 := &Item{
-		node:     2,
-		priority: 7,
-	}
-
-	item4 := &Item{
-		node:     3,
-		priority: 5,
-	}
-
-	heap.Push(pq, item)
-	heap.Push(pq, item2)
-	heap.Push(pq, item3)
-	heap.Push(pq, item4)
-
-	print(*pq)
-
-	found := pq.getItemReferenceByNode(2)
-	found.priority = -1
-
-	pq.Update(found)
-
-	fmt.Println("POPPED ITEM", heap.Pop(pq))
-	fmt.Println("POPPED ITEM", heap.Pop(pq))
-
-	print(*pq)
-}
-
-func print(pq PriorityQueue) {
-	fmt.Println("#######")
-
-	for i := 0; i < pq.Len(); i++ {
-		fmt.Println(pq[i])
-	}
 }
