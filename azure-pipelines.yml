@@ -1,0 +1,29 @@
+# Go
+# Build your Go project.
+# Add steps that test, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/go
+
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: GoTool@0
+  inputs:
+    version: '1.14.3'
+  displayName: 'Install Go 1.14.3'
+
+- script: |
+    go mod download
+  displayName: 'Download dependencies'
+
+- script: |
+    go test -v ./...
+  displayName: 'Run tests'
+
+- script: |
+    env GOOS=linux GOARCH=amd64 go build -o prepare-commit-msg cmd/msgcommitter/msgcommitter.go
+    env GOOS=windows GOARCH=amd64 go build -o prepare-commit-msg.exe cmd/msgcommitter/msgcommitter.go
+  displayName: 'Build msgcommitter'
