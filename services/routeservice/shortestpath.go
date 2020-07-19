@@ -9,22 +9,11 @@ type DistanceInfo struct {
 	Previous string
 }
 
-type graph [][]int
-
 func findBestRoute(routes domain.Routes, boarding, destination string) (string, int) {
-
+	return "", 0
 }
 
-func buildGraph(routes domain.Routes, indexes map[string]int) [][]int {
-	graph := [][]int{}
-
-	for boarding, dests := range routes {
-		connections := []int{}
-		
-		for dest, cost := range dests {
-			
-		}
-	}
+func buildGraph(routes domain.Routes, indexes map[string]int) {
 }
 
 func buildAirportsIndexAndDistance(airports []string) (map[string]int, []int) {
@@ -40,19 +29,6 @@ func buildAirportsIndexAndDistance(airports []string) (map[string]int, []int) {
 }
 
 // Dijkstra implements the Dijkstra's Shortest Path algorithm.
-func Dijkstra(board, dest string, airports []string) map[string]DistanceInfo {
-	indexes, dist := buildAirportsIndexAndDistance(airports)
-	visited := make([]bool, len(dist))
-	pq := NewPriorityQueue()
-
-	item := &Item{
-		value:    board,
-		priority: 0,
-	}
-
-	pq.Push(item)
-
-	for pq.Len() != 0 {
-
-	}
+func Dijkstra(board, dest int, airports []string) map[string]DistanceInfo {
+	return nil
 }
