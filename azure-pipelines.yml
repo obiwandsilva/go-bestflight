@@ -22,8 +22,3 @@ steps:
 - script: |
     go test -v ./...
   displayName: 'Run tests'
-
-- script: |
-    env GOOS=linux GOARCH=amd64 go build -o prepare-commit-msg cmd/msgcommitter/msgcommitter.go
-    env GOOS=windows GOARCH=amd64 go build -o prepare-commit-msg.exe cmd/msgcommitter/msgcommitter.go
-  displayName: 'Build msgcommitter'
