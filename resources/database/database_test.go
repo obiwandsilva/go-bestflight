@@ -245,37 +245,37 @@ func TestDatabase(t *testing.T) {
 			Connect()
 
 			routes := []domain.Route{
-				domain.Route{
+				{
 					Boarding:    "GRU",
 					Destination: "BRC",
 					Cost:        10,
 				},
-				domain.Route{
+				{
 					Boarding:    "BRC",
 					Destination: "SCL",
 					Cost:        5,
 				},
-				domain.Route{
+				{
 					Boarding:    "GRU",
 					Destination: "CDG",
 					Cost:        75,
 				},
-				domain.Route{
+				{
 					Boarding:    "GRU",
 					Destination: "SCL",
 					Cost:        20,
 				},
-				domain.Route{
+				{
 					Boarding:    "GRU",
 					Destination: "ORL",
 					Cost:        56,
 				},
-				domain.Route{
+				{
 					Boarding:    "ORL",
 					Destination: "CDG",
 					Cost:        5,
 				},
-				domain.Route{
+				{
 					Boarding:    "SCL",
 					Destination: "ORL",
 					Cost:        20,
@@ -309,6 +309,52 @@ func TestDatabase(t *testing.T) {
 			g.Assert(result6).Equal(5)
 			g.Assert(result7).Equal(20)
 			g.Assert(result8).Equal(-1)
+		})
+	})
+
+	g.Describe("Tests for StoreAirport", func() {
+		g.AfterEach(func() {
+			truncate()
+		})
+
+		g.It("should successfully store an airport", func() {
+			Connect()
+
+			airport := "GRU"
+			result := StoreAirport(airport)
+
+			g.Assert(result).Equal(airport)
+		})
+	})
+
+	g.Describe("Tests for GetAllAirports", func() {
+		g.AfterEach(func() {
+			truncate()
+		})
+
+		g.It("should successfully return all stored airports", func() {
+			Connect()
+
+			airports := map[string]struct{}{
+				"GRU": {},
+				"CDG": {},
+				"ORL": {},
+				"BRC": {},
+			}
+
+			for airport := range airports {
+				StoreAirport(airport)
+			}
+
+			result := GetAllAirports()
+
+			g.Assert(len(result)).Equal(4)
+
+			for _, airport := range result {
+				_, ok := airports[airport]
+
+				g.Assert(ok).Equal(true)
+			}
 		})
 	})
 }

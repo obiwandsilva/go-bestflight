@@ -98,8 +98,8 @@ func StoreAirport(airport string) string {
 	return airport
 }
 
-// SelectAllAirports ...
-func SelectAllAirports() []string {
+// GetAllAirports ...
+func GetAllAirports() []string {
 	db.RLock()
 	defer db.RUnlock()
 
