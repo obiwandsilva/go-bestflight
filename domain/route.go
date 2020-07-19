@@ -14,6 +14,4 @@ type Destination struct {
 }
 
 // Routes ...
-type Routes struct {
-	routes map[string][]Destination
-}
+type Routes map[string][]Destination
