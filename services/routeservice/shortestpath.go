@@ -9,7 +9,7 @@ import (
 
 type indexes map[interface{}]interface{}
 
-type routesGraph [][]r.Destination
+type routesGraph [][]r.Connection
 
 type dijkstraArgs struct {
 	start int
@@ -71,7 +71,7 @@ func buildIndexesAndDistance(airports []string) (indexes, []int) {
 }
 
 func buildGraph(routes r.Routes, indxs indexes, graphSize int) routesGraph {
-	graph := make([][]r.Destination, graphSize)
+	graph := make([][]r.Connection, graphSize)
 
 	for boarding, destinations := range routes {
 		i := indxs[boarding].(int)

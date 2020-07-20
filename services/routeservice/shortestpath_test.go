@@ -20,19 +20,19 @@ func TestShortestPath(t *testing.T) {
 	}
 
 	routes := r.Routes{
-		"GRU": []r.Destination{
+		"GRU": []r.Connection{
 			{Airport: "BRC", Cost: 10},
 			{Airport: "CDG", Cost: 75},
 			{Airport: "SCL", Cost: 20},
 			{Airport: "ORL", Cost: 56},
 		},
-		"BRC": []r.Destination{
+		"BRC": []r.Connection{
 			{Airport: "SCL", Cost: 5},
 		},
-		"ORL": []r.Destination{
+		"ORL": []r.Connection{
 			{Airport: "CDG", Cost: 5},
 		},
-		"SCL": []r.Destination{
+		"SCL": []r.Connection{
 			{Airport: "ORL", Cost: 20},
 		},
 	}
@@ -191,7 +191,7 @@ func TestShortestPath(t *testing.T) {
 			for k, v := range routes {
 				newRoutes[k] = v
 			}
-			newRoutes["X"] = []r.Destination{
+			newRoutes["X"] = []r.Connection{
 				{Airport: "GRU", Cost: 7},
 			}
 			newAirports := append(airports, "X")
@@ -223,10 +223,10 @@ func TestShortestPath(t *testing.T) {
 			for k, v := range routes {
 				newRoutes[k] = v
 			}
-			newRoutes["CDG"] = []r.Destination{
+			newRoutes["CDG"] = []r.Connection{
 				{Airport: "GRU", Cost: 70},
 			}
-			newRoutes["ORL"] = append(newRoutes["ORL"], r.Destination{Airport: "GRU", Cost: 50})
+			newRoutes["ORL"] = append(newRoutes["ORL"], r.Connection{Airport: "GRU", Cost: 50})
 
 			indxs, distances := buildIndexesAndDistance(airports)
 			graph := buildGraph(newRoutes, indxs, len(distances))
@@ -258,10 +258,10 @@ func TestShortestPath(t *testing.T) {
 			for k, v := range routes {
 				newRoutes[k] = v
 			}
-			newRoutes["X"] = []r.Destination{
+			newRoutes["X"] = []r.Connection{
 				{Airport: "Y", Cost: 15},
 			}
-			newRoutes["Y"] = []r.Destination{
+			newRoutes["Y"] = []r.Connection{
 				{Airport: "X", Cost: 15},
 				{Airport: "Z", Cost: 16},
 			}
@@ -295,7 +295,7 @@ func TestShortestPath(t *testing.T) {
 			for k, v := range routes {
 				newRoutes[k] = v
 			}
-			newRoutes["X"] = []r.Destination{
+			newRoutes["X"] = []r.Connection{
 				{Airport: "Y", Cost: 15},
 			}
 			newAirports := append(airports, "X", "Y")

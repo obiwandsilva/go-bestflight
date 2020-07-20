@@ -13,11 +13,11 @@ type BestRoute struct {
 	Cost  int
 }
 
-// Destination ...
-type Destination struct {
+// Connection ...
+type Connection struct {
 	Airport string
 	Cost    int
 }
 
 // Routes ...
-type Routes map[string][]Destination
+type Routes map[string][]Connection
