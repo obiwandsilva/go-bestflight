@@ -23,13 +23,15 @@ func TestDatabase(t *testing.T) {
 	})
 
 	g.Describe("Tests for StoreRoute", func() {
+		g.BeforeEach(func() {
+			Connect()
+		})
+
 		g.AfterEach(func() {
 			truncate()
 		})
 
 		g.It("should successfully store a route", func() {
-			Connect()
-
 			route := routes.Route{
 				Boarding:    "GRU",
 				Destination: "CDG",
@@ -41,8 +43,6 @@ func TestDatabase(t *testing.T) {
 		})
 
 		g.It("should not return errors when storing the same route multiple times", func() {
-			Connect()
-
 			route1 := routes.Route{
 				Boarding:    "GRU",
 				Destination: "CDG",
@@ -62,8 +62,6 @@ func TestDatabase(t *testing.T) {
 		})
 
 		g.It("should successfully store a routes with equal boardings and different destinations", func() {
-			Connect()
-
 			route := routes.Route{
 				Boarding:    "GRU",
 				Destination: "CDG",
@@ -83,8 +81,6 @@ func TestDatabase(t *testing.T) {
 		})
 
 		g.It("should successfully store a routes with different boardings and same destinations", func() {
-			Connect()
-
 			route := routes.Route{
 				Boarding:    "GRU",
 				Destination: "CDG",
@@ -104,8 +100,6 @@ func TestDatabase(t *testing.T) {
 		})
 
 		g.It("should successfully store a routes with different boardings and destinations", func() {
-			Connect()
-
 			route := routes.Route{
 				Boarding:    "GRU",
 				Destination: "CDG",
@@ -126,13 +120,15 @@ func TestDatabase(t *testing.T) {
 	})
 
 	g.Describe("Tests for GetRouteCost", func() {
+		g.BeforeEach(func() {
+			Connect()
+		})
+
 		g.AfterEach(func() {
 			truncate()
 		})
 
 		g.It("should successfully return a cost for a stored route", func() {
-			Connect()
-
 			boarding := "GRU"
 			destination := "ORL"
 			cost := 56
@@ -151,8 +147,6 @@ func TestDatabase(t *testing.T) {
 		})
 
 		g.It("should return an error for unexisting route", func() {
-			Connect()
-
 			boarding := "GRU"
 			destination := "ORL"
 
@@ -163,8 +157,6 @@ func TestDatabase(t *testing.T) {
 		})
 
 		g.It("should successfully return a cost for different stored routes", func() {
-			Connect()
-
 			route := routes.Route{
 				Boarding:    "GRU",
 				Destination: "BRC",
@@ -238,10 +230,6 @@ func TestDatabase(t *testing.T) {
 	})
 
 	g.Describe("Tests for StoreRoutes", func() {
-		g.AfterEach(func() {
-			truncate()
-		})
-
 		g.It("should successfully store multiple routes", func() {
 			Connect()
 
@@ -310,14 +298,12 @@ func TestDatabase(t *testing.T) {
 			g.Assert(result6).Equal(5)
 			g.Assert(result7).Equal(20)
 			g.Assert(result8).Equal(-1)
+
+			truncate()
 		})
 	})
 
 	g.Describe("Tests for StoreAirport", func() {
-		g.AfterEach(func() {
-			truncate()
-		})
-
 		g.It("should successfully store an airport", func() {
 			Connect()
 
@@ -325,14 +311,12 @@ func TestDatabase(t *testing.T) {
 			result := StoreAirport(airport)
 
 			g.Assert(result).Equal(airport)
+
+			truncate()
 		})
 	})
 
 	g.Describe("Tests for GetAllAirports", func() {
-		g.AfterEach(func() {
-			truncate()
-		})
-
 		g.It("should successfully return all stored airports", func() {
 			Connect()
 
@@ -356,6 +340,8 @@ func TestDatabase(t *testing.T) {
 
 				g.Assert(ok).Equal(true)
 			}
+
+			truncate()
 		})
 	})
 }
