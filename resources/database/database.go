@@ -69,12 +69,12 @@ func GetRouteCost(boarding, destination string) (int, error) {
 	instance.RLock()
 	defer instance.RUnlock()
 
-	destinations, ok := instance.routeTable[boarding]
+	connections, ok := instance.routeTable[boarding]
 	if !ok {
 		return -1, errors.NewRouteNotFoundErr()
 	}
 
-	cost, ok := destinations[destination]
+	cost, ok := connections[destination]
 	if !ok {
 		return -1, errors.NewRouteNotFoundErr()
 	}
