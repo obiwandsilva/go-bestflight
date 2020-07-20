@@ -2,6 +2,7 @@ package routeservice
 
 import (
 	"container/heap"
+	"go-bestflight/domain/errors"
 	r "go-bestflight/domain/routes"
 	"strings"
 )
@@ -43,6 +44,11 @@ func findBestRoute(airports []string, routes r.Routes, boarding, destination str
 		g:     g,
 	}
 	bestRoute, cost := DijkstraSTP(args)
+
+	if cost == maxInt {
+		return r.BestRoute{}, errors.NewBestRouteNotFoundErr()
+	}
+
 	best := r.BestRoute{
 		Route: convertRouteToNamed(bestRoute, indexes),
 		Cost:  cost,
