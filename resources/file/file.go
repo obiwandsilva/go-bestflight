@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 	r "go-bestflight/domain/entities/routes"
+	validation "go-bestflight/domain/services/validationservice"
 	"log"
 	"os"
-	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -53,16 +53,6 @@ func truncate() {
 	os.Truncate(instance.filePath, 0)
 }
 
-func isValidAirport(airport string) bool {
-	pattern := `^[A-Z]{3}$`
-	match, err := regexp.MatchString(pattern, airport)
-	if err != nil {
-		log.Println(err)
-	}
-
-	return match
-}
-
 func cleanLine(line string) string {
 	return strings.Replace(line, "\n", "", -1)
 }
@@ -78,7 +68,7 @@ func lineToRoute(line string, lineN int) (r.Route, error) {
 	boarding := strings.ToUpper(components[0])
 	destination := strings.ToUpper(components[1])
 
-	if !isValidAirport(boarding) || !isValidAirport(destination) {
+	if !validation.IsValidAirport(boarding) || !validation.IsValidAirport(destination) {
 		log.Printf("invalid airport format at line: %d\n", lineN)
 		return r.Route{}, errors.New("invalid airport format")
 	}
@@ -109,7 +99,7 @@ func Write(route r.Route) error {
 
 	file, err := os.OpenFile(instance.filePath, os.O_APPEND|os.O_WRONLY, 0664)
 	if err != nil {
-		log.Println(err)
+		log.Printf("could not open the file: %v\n", err)
 		return err
 	}
 
@@ -117,12 +107,13 @@ func Write(route r.Route) error {
 
 	_, err = file.WriteString(strLine)
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("could not write to the file: %v\n", err)
+		return err
 	}
 
 	err = file.Close()
 	if err != nil {
-		log.Println(err)
+		log.Printf("could not close the file: %v\n", err)
 		return err
 	}
 

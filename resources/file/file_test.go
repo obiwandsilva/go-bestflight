@@ -35,21 +35,6 @@ func TestFile(t *testing.T) {
 		})
 	})
 
-	g.Describe("tests for isValidAirport", func() {
-		g.It("should return true for valid airport formats and false for invalid ones", func() {
-			g.Assert(isValidAirport("ABC")).IsTrue()
-
-			g.Assert(isValidAirport("GR")).IsFalse()
-			g.Assert(isValidAirport("GRUU")).IsFalse()
-			g.Assert(isValidAirport("grU")).IsFalse()
-			g.Assert(isValidAirport("abc")).IsFalse()
-			g.Assert(isValidAirport("1BC")).IsFalse()
-			g.Assert(isValidAirport("@!#")).IsFalse()
-			g.Assert(isValidAirport(" ")).IsFalse()
-			g.Assert(isValidAirport("")).IsFalse()
-		})
-	})
-
 	g.Describe("Tests for lineToRoute", func() {
 		g.It("should convert a valid line to a Route", func() {
 			route, _ := lineToRoute("GRU,CDG,75", 1)
