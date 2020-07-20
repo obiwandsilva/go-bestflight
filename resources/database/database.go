@@ -40,16 +40,9 @@ func StoreRoute(route r.Route) r.Route {
 	instance.Lock()
 	defer instance.Unlock()
 
-	dest, okBoarding := instance.routeTable[route.Boarding]
+	_, okBoarding := instance.routeTable[route.Boarding]
 
 	if okBoarding {
-		_, okDestination := dest[route.Destination]
-
-		if okDestination {
-			instance.routeTable[route.Boarding][route.Destination] = route.Cost
-			return route
-		}
-
 		instance.routeTable[route.Boarding][route.Destination] = route.Cost
 
 		return route
@@ -60,6 +53,26 @@ func StoreRoute(route r.Route) r.Route {
 	}
 
 	return route
+}
+
+// DeleteRoute deletes a given route from database.
+func DeleteRoute(route r.Route) {
+	instance.Lock()
+	defer instance.Unlock()
+
+	destinations, okBoarding := instance.routeTable[route.Boarding]
+
+	if okBoarding {
+		_, okDestination := destinations[route.Destination]
+
+		if okDestination {
+			delete(instance.routeTable[route.Boarding], route.Destination)
+		}
+	}
+
+	if len(instance.routeTable[route.Boarding]) == 0 {
+		delete(instance.routeTable, route.Boarding)
+	}
 }
 
 // GetRouteCost ...
@@ -95,6 +108,13 @@ func StoreAirport(airport string) string {
 	instance.airportTable[airport] = struct{}{}
 
 	return airport
+}
+
+// GetAirport returns true if the specified airport is found.
+func GetAirport(airport string) bool {
+	_, ok := instance.airportTable[airport]
+
+	return ok
 }
 
 // GetAllAirports ...

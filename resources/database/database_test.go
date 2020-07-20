@@ -2,7 +2,6 @@ package database
 
 import (
 	r "go-bestflight/domain/entities/routes"
-	"go-bestflight/domain/errors"
 	"testing"
 
 	"github.com/franela/goblin"
@@ -67,7 +66,7 @@ func TestDatabase(t *testing.T) {
 			g.Assert(result).Equal(route2)
 		})
 
-		g.It("should successfully store a r with equal boardings and different destinations", func() {
+		g.It("should store a route with equal boardings and different destinations", func() {
 			route := r.Route{
 				Boarding:    "GRU",
 				Destination: "CDG",
@@ -86,7 +85,7 @@ func TestDatabase(t *testing.T) {
 			g.Assert(result).Equal(route2)
 		})
 
-		g.It("should successfully store a r with different boardings and same destinations", func() {
+		g.It("should store a route with different boardings and same destinations", func() {
 			route := r.Route{
 				Boarding:    "GRU",
 				Destination: "CDG",
@@ -105,7 +104,7 @@ func TestDatabase(t *testing.T) {
 			g.Assert(result).Equal(route2)
 		})
 
-		g.It("should successfully store a r with different boardings and destinations", func() {
+		g.It("should store a route with different boardings and destinations", func() {
 			route := r.Route{
 				Boarding:    "GRU",
 				Destination: "CDG",
@@ -125,7 +124,7 @@ func TestDatabase(t *testing.T) {
 		})
 	})
 
-	g.Describe("Tests for GetRouteCost", func() {
+	g.Describe("Tests for DeleteRoute", func() {
 		g.BeforeEach(func() {
 			Connect()
 		})
@@ -134,220 +133,292 @@ func TestDatabase(t *testing.T) {
 			truncate()
 		})
 
-		g.It("should successfully return a cost for a stored route", func() {
-			boarding := "GRU"
-			destination := "ORL"
-			cost := 56
+		g.It("should successfully delete a stored route", func() {
 			route := r.Route{
-				Boarding:    boarding,
-				Destination: destination,
-				Cost:        cost,
-			}
-
-			StoreRoute(route)
-
-			result, err := GetRouteCost(boarding, destination)
-
-			g.Assert(err).Equal(nil)
-			g.Assert(result).Equal(cost)
-		})
-
-		g.It("should return an error for unexisting route", func() {
-			boarding := "GRU"
-			destination := "ORL"
-
-			result, err := GetRouteCost(boarding, destination)
-
-			g.Assert(err).Equal(errors.NewRouteNotFoundErr())
-			g.Assert(result).Equal(-1)
-		})
-
-		g.It("should successfully return a cost for different stored r", func() {
-			route := r.Route{
-				Boarding:    "GRU",
-				Destination: "BRC",
-				Cost:        10,
-			}
-			route2 := r.Route{
-				Boarding:    "BRC",
-				Destination: "SCL",
-				Cost:        5,
-			}
-			route3 := r.Route{
 				Boarding:    "GRU",
 				Destination: "CDG",
 				Cost:        75,
 			}
-			route4 := r.Route{
+
+			StoreRoute(route)
+
+			cost, ok := instance.routeTable[route.Boarding][route.Destination]
+
+			g.Assert(ok).IsTrue()
+			g.Assert(cost).Equal(75)
+
+			DeleteRoute(route)
+
+			_, ok = instance.routeTable[route.Boarding]
+
+			g.Assert(ok).IsFalse()
+		})
+
+		g.It("should delete only one nested destination in case of having many", func() {
+			route := r.Route{
+				Boarding:    "GRU",
+				Destination: "CDG",
+				Cost:        75,
+			}
+			route2 := r.Route{
 				Boarding:    "GRU",
 				Destination: "SCL",
-				Cost:        20,
-			}
-			route5 := r.Route{
-				Boarding:    "GRU",
-				Destination: "ORL",
-				Cost:        56,
-			}
-			route6 := r.Route{
-				Boarding:    "ORL",
-				Destination: "CDG",
-				Cost:        5,
-			}
-			route7 := r.Route{
-				Boarding:    "SCL",
-				Destination: "ORL",
 				Cost:        20,
 			}
 
 			StoreRoute(route)
 			StoreRoute(route2)
-			StoreRoute(route3)
-			StoreRoute(route4)
-			StoreRoute(route5)
-			StoreRoute(route6)
-			StoreRoute(route7)
 
-			result, err := GetRouteCost("GRU", "BRC")
-			result2, err2 := GetRouteCost("BRC", "SCL")
-			result3, err3 := GetRouteCost("GRU", "CDG")
-			result4, err4 := GetRouteCost("GRU", "SCL")
-			result5, err5 := GetRouteCost("GRU", "ORL")
-			result6, err6 := GetRouteCost("ORL", "CDG")
-			result7, err7 := GetRouteCost("SCL", "ORL")
-			result8, err8 := GetRouteCost("A", "B")
+			cost, ok := instance.routeTable[route.Boarding][route.Destination]
+			g.Assert(ok).IsTrue()
+			g.Assert(cost).Equal(75)
 
-			g.Assert(err).Equal(nil)
-			g.Assert(err2).Equal(nil)
-			g.Assert(err3).Equal(nil)
-			g.Assert(err4).Equal(nil)
-			g.Assert(err5).Equal(nil)
-			g.Assert(err6).Equal(nil)
-			g.Assert(err7).Equal(nil)
-			g.Assert(err8).Equal(errors.NewRouteNotFoundErr())
-			g.Assert(result).Equal(10)
-			g.Assert(result2).Equal(5)
-			g.Assert(result3).Equal(75)
-			g.Assert(result4).Equal(20)
-			g.Assert(result5).Equal(56)
-			g.Assert(result6).Equal(5)
-			g.Assert(result7).Equal(20)
-			g.Assert(result8).Equal(-1)
+			cost, ok = instance.routeTable[route.Boarding][route2.Destination]
+			g.Assert(ok).IsTrue()
+			g.Assert(cost).Equal(20)
+
+			DeleteRoute(route)
+
+			_, ok = instance.routeTable[route.Boarding][route.Destination]
+			g.Assert(ok).IsFalse()
+
+			cost, ok = instance.routeTable[route2.Boarding][route2.Destination]
+			g.Assert(ok).IsTrue()
+			g.Assert(cost).Equal(20)
+
+			DeleteRoute(route2)
+
+			_, ok = instance.routeTable[route2.Boarding]
+			g.Assert(ok).IsFalse()
+
+			g.Assert(len(instance.routeTable)).Equal(0)
 		})
+
 	})
 
-	g.Describe("Tests for StoreRoutes", func() {
-		g.It("should successfully store multiple r", func() {
-			Connect()
+	// g.Describe("Tests for GetRouteCost", func() {
+	// 	g.BeforeEach(func() {
+	// 		Connect()
+	// 	})
 
-			r := []r.Route{
-				{
-					Boarding:    "GRU",
-					Destination: "BRC",
-					Cost:        10,
-				},
-				{
-					Boarding:    "BRC",
-					Destination: "SCL",
-					Cost:        5,
-				},
-				{
-					Boarding:    "GRU",
-					Destination: "CDG",
-					Cost:        75,
-				},
-				{
-					Boarding:    "GRU",
-					Destination: "SCL",
-					Cost:        20,
-				},
-				{
-					Boarding:    "GRU",
-					Destination: "ORL",
-					Cost:        56,
-				},
-				{
-					Boarding:    "ORL",
-					Destination: "CDG",
-					Cost:        5,
-				},
-				{
-					Boarding:    "SCL",
-					Destination: "ORL",
-					Cost:        20,
-				},
-			}
+	// 	g.AfterEach(func() {
+	// 		truncate()
+	// 	})
 
-			StoreRoutes(r)
+	// 	g.It("should successfully return a cost for a stored route", func() {
+	// 		boarding := "GRU"
+	// 		destination := "ORL"
+	// 		cost := 56
+	// 		route := r.Route{
+	// 			Boarding:    boarding,
+	// 			Destination: destination,
+	// 			Cost:        cost,
+	// 		}
 
-			result, err := GetRouteCost("GRU", "BRC")
-			result2, err2 := GetRouteCost("BRC", "SCL")
-			result3, err3 := GetRouteCost("GRU", "CDG")
-			result4, err4 := GetRouteCost("GRU", "SCL")
-			result5, err5 := GetRouteCost("GRU", "ORL")
-			result6, err6 := GetRouteCost("ORL", "CDG")
-			result7, err7 := GetRouteCost("SCL", "ORL")
-			result8, err8 := GetRouteCost("A", "B")
+	// 		StoreRoute(route)
 
-			g.Assert(err).Equal(nil)
-			g.Assert(err2).Equal(nil)
-			g.Assert(err3).Equal(nil)
-			g.Assert(err4).Equal(nil)
-			g.Assert(err5).Equal(nil)
-			g.Assert(err6).Equal(nil)
-			g.Assert(err7).Equal(nil)
-			g.Assert(err8).Equal(errors.NewRouteNotFoundErr())
-			g.Assert(result).Equal(10)
-			g.Assert(result2).Equal(5)
-			g.Assert(result3).Equal(75)
-			g.Assert(result4).Equal(20)
-			g.Assert(result5).Equal(56)
-			g.Assert(result6).Equal(5)
-			g.Assert(result7).Equal(20)
-			g.Assert(result8).Equal(-1)
+	// 		result, err := GetRouteCost(boarding, destination)
 
-			truncate()
-		})
-	})
+	// 		g.Assert(err).Equal(nil)
+	// 		g.Assert(result).Equal(cost)
+	// 	})
 
-	g.Describe("Tests for StoreAirport", func() {
-		g.It("should successfully store an airport", func() {
-			Connect()
+	// 	g.It("should return an error for unexisting route", func() {
+	// 		boarding := "GRU"
+	// 		destination := "ORL"
 
-			airport := "GRU"
-			result := StoreAirport(airport)
+	// 		result, err := GetRouteCost(boarding, destination)
 
-			g.Assert(result).Equal(airport)
+	// 		g.Assert(err).Equal(errors.NewRouteNotFoundErr())
+	// 		g.Assert(result).Equal(-1)
+	// 	})
 
-			truncate()
-		})
-	})
+	// 	g.It("should successfully return a cost for different stored r", func() {
+	// 		route := r.Route{
+	// 			Boarding:    "GRU",
+	// 			Destination: "BRC",
+	// 			Cost:        10,
+	// 		}
+	// 		route2 := r.Route{
+	// 			Boarding:    "BRC",
+	// 			Destination: "SCL",
+	// 			Cost:        5,
+	// 		}
+	// 		route3 := r.Route{
+	// 			Boarding:    "GRU",
+	// 			Destination: "CDG",
+	// 			Cost:        75,
+	// 		}
+	// 		route4 := r.Route{
+	// 			Boarding:    "GRU",
+	// 			Destination: "SCL",
+	// 			Cost:        20,
+	// 		}
+	// 		route5 := r.Route{
+	// 			Boarding:    "GRU",
+	// 			Destination: "ORL",
+	// 			Cost:        56,
+	// 		}
+	// 		route6 := r.Route{
+	// 			Boarding:    "ORL",
+	// 			Destination: "CDG",
+	// 			Cost:        5,
+	// 		}
+	// 		route7 := r.Route{
+	// 			Boarding:    "SCL",
+	// 			Destination: "ORL",
+	// 			Cost:        20,
+	// 		}
 
-	g.Describe("Tests for GetAllAirports", func() {
-		g.It("should successfully return all stored airports", func() {
-			Connect()
+	// 		StoreRoute(route)
+	// 		StoreRoute(route2)
+	// 		StoreRoute(route3)
+	// 		StoreRoute(route4)
+	// 		StoreRoute(route5)
+	// 		StoreRoute(route6)
+	// 		StoreRoute(route7)
 
-			airports := map[string]struct{}{
-				"GRU": {},
-				"CDG": {},
-				"ORL": {},
-				"BRC": {},
-			}
+	// 		result, err := GetRouteCost("GRU", "BRC")
+	// 		result2, err2 := GetRouteCost("BRC", "SCL")
+	// 		result3, err3 := GetRouteCost("GRU", "CDG")
+	// 		result4, err4 := GetRouteCost("GRU", "SCL")
+	// 		result5, err5 := GetRouteCost("GRU", "ORL")
+	// 		result6, err6 := GetRouteCost("ORL", "CDG")
+	// 		result7, err7 := GetRouteCost("SCL", "ORL")
+	// 		result8, err8 := GetRouteCost("A", "B")
 
-			for airport := range airports {
-				StoreAirport(airport)
-			}
+	// 		g.Assert(err).Equal(nil)
+	// 		g.Assert(err2).Equal(nil)
+	// 		g.Assert(err3).Equal(nil)
+	// 		g.Assert(err4).Equal(nil)
+	// 		g.Assert(err5).Equal(nil)
+	// 		g.Assert(err6).Equal(nil)
+	// 		g.Assert(err7).Equal(nil)
+	// 		g.Assert(err8).Equal(errors.NewRouteNotFoundErr())
+	// 		g.Assert(result).Equal(10)
+	// 		g.Assert(result2).Equal(5)
+	// 		g.Assert(result3).Equal(75)
+	// 		g.Assert(result4).Equal(20)
+	// 		g.Assert(result5).Equal(56)
+	// 		g.Assert(result6).Equal(5)
+	// 		g.Assert(result7).Equal(20)
+	// 		g.Assert(result8).Equal(-1)
+	// 	})
+	// })
 
-			result := GetAllAirports()
+	// g.Describe("Tests for StoreRoutes", func() {
+	// 	g.It("should successfully store multiple r", func() {
+	// 		Connect()
 
-			g.Assert(len(result)).Equal(4)
+	// 		r := []r.Route{
+	// 			{
+	// 				Boarding:    "GRU",
+	// 				Destination: "BRC",
+	// 				Cost:        10,
+	// 			},
+	// 			{
+	// 				Boarding:    "BRC",
+	// 				Destination: "SCL",
+	// 				Cost:        5,
+	// 			},
+	// 			{
+	// 				Boarding:    "GRU",
+	// 				Destination: "CDG",
+	// 				Cost:        75,
+	// 			},
+	// 			{
+	// 				Boarding:    "GRU",
+	// 				Destination: "SCL",
+	// 				Cost:        20,
+	// 			},
+	// 			{
+	// 				Boarding:    "GRU",
+	// 				Destination: "ORL",
+	// 				Cost:        56,
+	// 			},
+	// 			{
+	// 				Boarding:    "ORL",
+	// 				Destination: "CDG",
+	// 				Cost:        5,
+	// 			},
+	// 			{
+	// 				Boarding:    "SCL",
+	// 				Destination: "ORL",
+	// 				Cost:        20,
+	// 			},
+	// 		}
 
-			for _, airport := range result {
-				_, ok := airports[airport]
+	// 		StoreRoutes(r)
 
-				g.Assert(ok).Equal(true)
-			}
+	// 		result, err := GetRouteCost("GRU", "BRC")
+	// 		result2, err2 := GetRouteCost("BRC", "SCL")
+	// 		result3, err3 := GetRouteCost("GRU", "CDG")
+	// 		result4, err4 := GetRouteCost("GRU", "SCL")
+	// 		result5, err5 := GetRouteCost("GRU", "ORL")
+	// 		result6, err6 := GetRouteCost("ORL", "CDG")
+	// 		result7, err7 := GetRouteCost("SCL", "ORL")
+	// 		result8, err8 := GetRouteCost("A", "B")
 
-			truncate()
-		})
-	})
+	// 		g.Assert(err).Equal(nil)
+	// 		g.Assert(err2).Equal(nil)
+	// 		g.Assert(err3).Equal(nil)
+	// 		g.Assert(err4).Equal(nil)
+	// 		g.Assert(err5).Equal(nil)
+	// 		g.Assert(err6).Equal(nil)
+	// 		g.Assert(err7).Equal(nil)
+	// 		g.Assert(err8).Equal(errors.NewRouteNotFoundErr())
+	// 		g.Assert(result).Equal(10)
+	// 		g.Assert(result2).Equal(5)
+	// 		g.Assert(result3).Equal(75)
+	// 		g.Assert(result4).Equal(20)
+	// 		g.Assert(result5).Equal(56)
+	// 		g.Assert(result6).Equal(5)
+	// 		g.Assert(result7).Equal(20)
+	// 		g.Assert(result8).Equal(-1)
+
+	// 		truncate()
+	// 	})
+	// })
+
+	// g.Describe("Tests for StoreAirport", func() {
+	// 	g.It("should successfully store an airport", func() {
+	// 		Connect()
+
+	// 		airport := "GRU"
+	// 		result := StoreAirport(airport)
+
+	// 		g.Assert(result).Equal(airport)
+
+	// 		truncate()
+	// 	})
+	// })
+
+	// g.Describe("Tests for GetAllAirports", func() {
+	// 	g.It("should successfully return all stored airports", func() {
+	// 		Connect()
+
+	// 		airports := map[string]struct{}{
+	// 			"GRU": {},
+	// 			"CDG": {},
+	// 			"ORL": {},
+	// 			"BRC": {},
+	// 		}
+
+	// 		for airport := range airports {
+	// 			StoreAirport(airport)
+	// 		}
+
+	// 		result := GetAllAirports()
+
+	// 		g.Assert(len(result)).Equal(4)
+
+	// 		for _, airport := range result {
+	// 			_, ok := airports[airport]
+
+	// 			g.Assert(ok).Equal(true)
+	// 		}
+
+	// 		truncate()
+	// 	})
+	// })
 }
