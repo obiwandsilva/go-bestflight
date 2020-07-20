@@ -1,7 +1,8 @@
 package database
 
 import (
-	"go-bestflight/domain"
+	"go-bestflight/domain/errors"
+	"go-bestflight/domain/routes"
 	"sync"
 )
 
@@ -37,7 +38,7 @@ func truncate() {
 }
 
 // StoreRoute ...
-func StoreRoute(route domain.Route) domain.Route {
+func StoreRoute(route routes.Route) routes.Route {
 	db.Lock()
 	defer db.Unlock()
 
@@ -70,19 +71,19 @@ func GetRouteCost(boarding, destination string) (int, error) {
 
 	destinations, ok := db.routeTable[boarding]
 	if !ok {
-		return -1, NewRouteNotFoundErr()
+		return -1, errors.NewRouteNotFoundErr()
 	}
 
 	cost, ok := destinations[destination]
 	if !ok {
-		return -1, NewRouteNotFoundErr()
+		return -1, errors.NewRouteNotFoundErr()
 	}
 
 	return cost, nil
 }
 
 // StoreRoutes ...
-func StoreRoutes(routes []domain.Route) {
+func StoreRoutes(routes []routes.Route) {
 	for _, route := range routes {
 		StoreRoute(route)
 	}

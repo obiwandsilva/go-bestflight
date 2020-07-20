@@ -2,10 +2,10 @@ package routesrepository
 
 import (
 	"errors"
-	"go-bestflight/domain"
+	"go-bestflight/domain/routes"
 )
 
 // StoreRoute ...
-func StoreRoute(route domain.Route) error {
+func StoreRoute(route routes.Route) error {
 	return errors.New("Could not store route")
 }

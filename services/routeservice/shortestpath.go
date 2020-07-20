@@ -2,47 +2,73 @@ package routeservice
 
 import (
 	"container/heap"
-	"go-bestflight/domain"
+	r "go-bestflight/domain/routes"
+	"strings"
 )
 
-type index map[interface{}]interface{}
+type indexes map[interface{}]interface{}
+
+type routesGraph [][]r.Destination
 
 type dijkstraArgs struct {
-	start   int
-	end     int
-	dist    []int
-	indexes index
-	graph   [][]domain.Destination
+	start int
+	end   int
+	dist  []int
+	indxs indexes
+	g     routesGraph
 }
 
-func findBestRoute(airports []string, routes domain.Routes, boarding, destination string) (string, int) {
-	// indexes, distances := buildIndexAndDistance(airports)
-	// graph := buildGraph(routes, indexes, len(distances))
-	// boardingIndex := indexes[boarding]
-	// destinationIndex := indexes[destination]
+const (
+	maxInt = int(^uint(0) >> 1)
+)
 
-	return "", 0
+func convertRouteToNamed(route []int, indxs indexes) string {
+	var strBuilder strings.Builder
+
+	for _, node := range route {
+		strBuilder.WriteString(indxs[node].(string))
+	}
+
+	return strBuilder.String()
 }
 
-func buildIndexesAndDistance(airports []string) (index, []int) {
-	indexes := make(index)
+func findBestRoute(airports []string, routes r.Routes, boarding, destination string) (r.BestRoute, error) {
+	indexes, distances := buildIndexesAndDistance(airports)
+	g := buildGraph(routes, indexes, len(distances))
+	args := dijkstraArgs{
+		start: indexes[boarding].(int),
+		end:   indexes[destination].(int),
+		dist:  distances,
+		indxs: indexes,
+		g:     g,
+	}
+	bestRoute, cost := DijkstraSTP(args)
+	best := r.BestRoute{
+		Route: convertRouteToNamed(bestRoute, indexes),
+		Cost:  cost,
+	}
+
+	return best, nil
+}
+
+func buildIndexesAndDistance(airports []string) (indexes, []int) {
+	indxs := make(indexes)
 	distances := make([]int, len(airports))
-	maxInt := int(^uint(0) >> 1)
 
 	for i, airport := range airports {
-		indexes[airport] = i
-		indexes[i] = airport
+		indxs[airport] = i
+		indxs[i] = airport
 		distances[i] = maxInt
 	}
 
-	return indexes, distances
+	return indxs, distances
 }
 
-func buildGraph(routes domain.Routes, indexes index, graphSize int) [][]domain.Destination {
-	graph := make([][]domain.Destination, graphSize)
+func buildGraph(routes r.Routes, indxs indexes, graphSize int) routesGraph {
+	graph := make([][]r.Destination, graphSize)
 
 	for boarding, destinations := range routes {
-		i := indexes[boarding].(int)
+		i := indxs[boarding].(int)
 		graph[i] = destinations
 	}
 
@@ -97,8 +123,8 @@ func DijkstraSTP(args dijkstraArgs) ([]int, int) {
 			continue
 		}
 
-		for _, destination := range args.graph[nodeMinDistance.node] {
-			destinationNode := args.indexes[destination.Airport].(int)
+		for _, destination := range args.g[nodeMinDistance.node] {
+			destinationNode := args.indxs[destination.Airport].(int)
 			newDistance := args.dist[nodeMinDistance.node] + destination.Cost
 
 			if newDistance >= args.dist[destinationNode] {

@@ -1,7 +1,8 @@
 package routeservice
 
 import (
-	"go-bestflight/domain"
+	"fmt"
+	r "go-bestflight/domain/routes"
 	"testing"
 
 	"github.com/franela/goblin"
@@ -18,34 +19,34 @@ func TestShortestPath(t *testing.T) {
 		"SCL",
 	}
 
-	routes := domain.Routes{
-		"GRU": []domain.Destination{
+	routes := r.Routes{
+		"GRU": []r.Destination{
 			{Airport: "BRC", Cost: 10},
 			{Airport: "CDG", Cost: 75},
 			{Airport: "SCL", Cost: 20},
 			{Airport: "ORL", Cost: 56},
 		},
-		"BRC": []domain.Destination{
+		"BRC": []r.Destination{
 			{Airport: "SCL", Cost: 5},
 		},
-		"ORL": []domain.Destination{
+		"ORL": []r.Destination{
 			{Airport: "CDG", Cost: 5},
 		},
-		"SCL": []domain.Destination{
+		"SCL": []r.Destination{
 			{Airport: "ORL", Cost: 20},
 		},
 	}
 
 	g.Describe("Tests for buildIndexAndDistance", func() {
-		g.It("should successfully build a map of indexes and a slice of distances", func() {
+		g.It("should successfully build a map of indxs and a slice of distances", func() {
 			maxInt := int(^uint(0) >> 1)
-			indexes, distances := buildIndexesAndDistance(airports)
+			indxs, distances := buildIndexesAndDistance(airports)
 
-			g.Assert(indexes[airports[0]]).Equal(0)
-			g.Assert(indexes[airports[1]]).Equal(1)
-			g.Assert(indexes[airports[2]]).Equal(2)
-			g.Assert(indexes[airports[3]]).Equal(3)
-			g.Assert(indexes[airports[4]]).Equal(4)
+			g.Assert(indxs[airports[0]]).Equal(0)
+			g.Assert(indxs[airports[1]]).Equal(1)
+			g.Assert(indxs[airports[2]]).Equal(2)
+			g.Assert(indxs[airports[3]]).Equal(3)
+			g.Assert(indxs[airports[4]]).Equal(4)
 
 			g.Assert(len(distances)).Equal(len(airports))
 
@@ -57,13 +58,13 @@ func TestShortestPath(t *testing.T) {
 
 	g.Describe("Tests for buildGraph", func() {
 		g.It("should successfully build a graph", func() {
-			indexes, distances := buildIndexesAndDistance(airports)
-			graph := buildGraph(routes, indexes, len(distances))
+			indxs, distances := buildIndexesAndDistance(airports)
+			graph := buildGraph(routes, indxs, len(distances))
 
 			g.Assert(len(graph)).Equal(len(distances))
 
 			for _, airport := range airports {
-				airportIndex := indexes[airport].(int)
+				airportIndex := indxs[airport].(int)
 
 				g.Assert(len(graph[airportIndex])).Equal(len(routes[airport]))
 				g.Assert(graph[airportIndex]).Equal(routes[airport])
@@ -97,7 +98,7 @@ func TestShortestPath(t *testing.T) {
 			// 	GRU,ORL,56
 			// 	ORL,CDG,5
 			// 	SCL,ORL,20
-			// Where indexes are:
+			// Where indxs are:
 			// 	GRU = 0
 			// 	BRC = 1
 			// 	SCL = 2
@@ -122,7 +123,7 @@ func TestShortestPath(t *testing.T) {
 			// 	GRU,ORL,56
 			// 	ORL,CDG,5
 			// 	SCL,ORL,20
-			// Where indexes are:
+			// Where indxs are:
 			// 	GRU = 0
 			// 	BRC = 1
 			// 	SCL = 2
@@ -141,20 +142,20 @@ func TestShortestPath(t *testing.T) {
 
 	g.Describe("Tests for DijkstraSTP", func() {
 		g.It("should retrieve the shortest path for a short distance", func() {
-			indexes, distances := buildIndexesAndDistance(airports)
-			graph := buildGraph(routes, indexes, len(distances))
+			indxs, distances := buildIndexesAndDistance(airports)
+			gph := buildGraph(routes, indxs, len(distances))
 			args := dijkstraArgs{
-				start:   indexes["BRC"].(int),
-				end:     indexes["SCL"].(int),
-				dist:    distances,
-				indexes: indexes,
-				graph:   graph,
+				start: indxs["BRC"].(int),
+				end:   indxs["SCL"].(int),
+				dist:  distances,
+				indxs: indxs,
+				g:     gph,
 			}
 			bestRoute, cost := DijkstraSTP(args)
 
 			expectedRoute := []int{
-				indexes["BRC"].(int),
-				indexes["SCL"].(int),
+				indxs["BRC"].(int),
+				indxs["SCL"].(int),
 			}
 
 			g.Assert(bestRoute).Equal(expectedRoute)
@@ -162,23 +163,23 @@ func TestShortestPath(t *testing.T) {
 		})
 
 		g.It("should retrieve the shortest path for a long distance", func() {
-			indexes, distances := buildIndexesAndDistance(airports)
-			graph := buildGraph(routes, indexes, len(distances))
+			indxs, distances := buildIndexesAndDistance(airports)
+			graph := buildGraph(routes, indxs, len(distances))
 			args := dijkstraArgs{
-				start:   indexes["GRU"].(int),
-				end:     indexes["CDG"].(int),
-				dist:    distances,
-				indexes: indexes,
-				graph:   graph,
+				start: indxs["GRU"].(int),
+				end:   indxs["CDG"].(int),
+				dist:  distances,
+				indxs: indxs,
+				g:     graph,
 			}
 			bestRoute, cost := DijkstraSTP(args)
 
 			expectedRoute := []int{
-				indexes["GRU"].(int),
-				indexes["BRC"].(int),
-				indexes["SCL"].(int),
-				indexes["ORL"].(int),
-				indexes["CDG"].(int),
+				indxs["GRU"].(int),
+				indxs["BRC"].(int),
+				indxs["SCL"].(int),
+				indxs["ORL"].(int),
+				indxs["CDG"].(int),
 			}
 
 			g.Assert(bestRoute).Equal(expectedRoute)
@@ -186,31 +187,31 @@ func TestShortestPath(t *testing.T) {
 		})
 
 		g.It("should retrieve the shortest path after add new routes", func() {
-			newRoutes := make(domain.Routes)
+			newRoutes := make(r.Routes)
 			for k, v := range routes {
 				newRoutes[k] = v
 			}
-			newRoutes["X"] = []domain.Destination{
+			newRoutes["X"] = []r.Destination{
 				{Airport: "GRU", Cost: 7},
 			}
 			newAirports := append(airports, "X")
 
-			indexes, distances := buildIndexesAndDistance(newAirports)
-			graph := buildGraph(newRoutes, indexes, len(distances))
+			indxs, distances := buildIndexesAndDistance(newAirports)
+			graph := buildGraph(newRoutes, indxs, len(distances))
 
 			args := dijkstraArgs{
-				start:   indexes["X"].(int),
-				end:     indexes["GRU"].(int),
-				dist:    distances,
-				indexes: indexes,
-				graph:   graph,
+				start: indxs["X"].(int),
+				end:   indxs["GRU"].(int),
+				dist:  distances,
+				indxs: indxs,
+				g:     graph,
 			}
 
 			bestRoute, cost := DijkstraSTP(args)
 
 			expectedRoute := []int{
-				indexes["X"].(int),
-				indexes["GRU"].(int),
+				indxs["X"].(int),
+				indxs["GRU"].(int),
 			}
 
 			g.Assert(bestRoute).Equal(expectedRoute)
@@ -218,34 +219,34 @@ func TestShortestPath(t *testing.T) {
 		})
 
 		g.It("should retrieve the shortest path even with reversed routes", func() {
-			newRoutes := make(domain.Routes)
+			newRoutes := make(r.Routes)
 			for k, v := range routes {
 				newRoutes[k] = v
 			}
-			newRoutes["CDG"] = []domain.Destination{
+			newRoutes["CDG"] = []r.Destination{
 				{Airport: "GRU", Cost: 70},
 			}
-			newRoutes["ORL"] = append(newRoutes["ORL"], domain.Destination{Airport: "GRU", Cost: 50})
+			newRoutes["ORL"] = append(newRoutes["ORL"], r.Destination{Airport: "GRU", Cost: 50})
 
-			indexes, distances := buildIndexesAndDistance(airports)
-			graph := buildGraph(newRoutes, indexes, len(distances))
+			indxs, distances := buildIndexesAndDistance(airports)
+			graph := buildGraph(newRoutes, indxs, len(distances))
 
 			args := dijkstraArgs{
-				start:   indexes["GRU"].(int),
-				end:     indexes["CDG"].(int),
-				dist:    distances,
-				indexes: indexes,
-				graph:   graph,
+				start: indxs["GRU"].(int),
+				end:   indxs["CDG"].(int),
+				dist:  distances,
+				indxs: indxs,
+				g:     graph,
 			}
 
 			bestRoute, cost := DijkstraSTP(args)
 
 			expectedRoute := []int{
-				indexes["GRU"].(int),
-				indexes["BRC"].(int),
-				indexes["SCL"].(int),
-				indexes["ORL"].(int),
-				indexes["CDG"].(int),
+				indxs["GRU"].(int),
+				indxs["BRC"].(int),
+				indxs["SCL"].(int),
+				indxs["ORL"].(int),
+				indxs["CDG"].(int),
 			}
 
 			g.Assert(bestRoute).Equal(expectedRoute)
@@ -253,40 +254,75 @@ func TestShortestPath(t *testing.T) {
 		})
 
 		g.It("should retrieve the shortest path after add new routes disassociated from others", func() {
-			newRoutes := make(domain.Routes)
+			newRoutes := make(r.Routes)
 			for k, v := range routes {
 				newRoutes[k] = v
 			}
-			newRoutes["X"] = []domain.Destination{
+			newRoutes["X"] = []r.Destination{
 				{Airport: "Y", Cost: 15},
 			}
-			newRoutes["Y"] = []domain.Destination{
+			newRoutes["Y"] = []r.Destination{
 				{Airport: "X", Cost: 15},
 				{Airport: "Z", Cost: 16},
 			}
 			newAirports := append(airports, "X", "Y", "Z")
 
-			indexes, distances := buildIndexesAndDistance(newAirports)
-			graph := buildGraph(newRoutes, indexes, len(distances))
+			indxs, distances := buildIndexesAndDistance(newAirports)
+			graph := buildGraph(newRoutes, indxs, len(distances))
 
 			args := dijkstraArgs{
-				start:   indexes["X"].(int),
-				end:     indexes["Z"].(int),
-				dist:    distances,
-				indexes: indexes,
-				graph:   graph,
+				start: indxs["X"].(int),
+				end:   indxs["Z"].(int),
+				dist:  distances,
+				indxs: indxs,
+				g:     graph,
 			}
 
 			bestRoute, cost := DijkstraSTP(args)
 
 			expectedRoute := []int{
-				indexes["X"].(int),
-				indexes["Y"].(int),
-				indexes["Z"].(int),
+				indxs["X"].(int),
+				indxs["Y"].(int),
+				indxs["Z"].(int),
 			}
 
 			g.Assert(bestRoute).Equal(expectedRoute)
 			g.Assert(cost).Equal(31)
+		})
+
+		g.It("should retrieve the shortest path after add new routes disassociated from others", func() {
+			newRoutes := make(r.Routes)
+			for k, v := range routes {
+				newRoutes[k] = v
+			}
+			newRoutes["X"] = []r.Destination{
+				{Airport: "Y", Cost: 15},
+			}
+			newAirports := append(airports, "X", "Y")
+
+			indxs, distances := buildIndexesAndDistance(newAirports)
+			graph := buildGraph(newRoutes, indxs, len(distances))
+
+			args := dijkstraArgs{
+				start: indxs["ORL"].(int),
+				end:   indxs["X"].(int),
+				dist:  distances,
+				indxs: indxs,
+				g:     graph,
+			}
+
+			bestRoute, cost := DijkstraSTP(args)
+
+			fmt.Println(indxs, bestRoute, cost)
+
+			// expectedRoute := []int{
+			// 	indxs["X"].(int),
+			// 	indxs["Y"].(int),
+			// 	indxs["Z"].(int),
+			// }
+
+			// g.Assert(bestRoute).Equal(expectedRoute)
+			// g.Assert(cost).Equal(31)
 		})
 	})
 }

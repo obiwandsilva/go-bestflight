@@ -1,7 +1,8 @@
 package database
 
 import (
-	"go-bestflight/domain"
+	"go-bestflight/domain/errors"
+	"go-bestflight/domain/routes"
 	"testing"
 
 	"github.com/franela/goblin"
@@ -29,7 +30,7 @@ func TestDatabase(t *testing.T) {
 		g.It("should successfully store a route", func() {
 			Connect()
 
-			route := domain.Route{
+			route := routes.Route{
 				Boarding:    "GRU",
 				Destination: "CDG",
 				Cost:        75,
@@ -42,12 +43,12 @@ func TestDatabase(t *testing.T) {
 		g.It("should not return errors when storing the same route multiple times", func() {
 			Connect()
 
-			route1 := domain.Route{
+			route1 := routes.Route{
 				Boarding:    "GRU",
 				Destination: "CDG",
 				Cost:        75,
 			}
-			route2 := domain.Route{
+			route2 := routes.Route{
 				Boarding:    "GRU",
 				Destination: "CDG",
 				Cost:        75,
@@ -63,12 +64,12 @@ func TestDatabase(t *testing.T) {
 		g.It("should successfully store a routes with equal boardings and different destinations", func() {
 			Connect()
 
-			route := domain.Route{
+			route := routes.Route{
 				Boarding:    "GRU",
 				Destination: "CDG",
 				Cost:        75,
 			}
-			route2 := domain.Route{
+			route2 := routes.Route{
 				Boarding:    "GRU",
 				Destination: "ORL",
 				Cost:        56,
@@ -84,12 +85,12 @@ func TestDatabase(t *testing.T) {
 		g.It("should successfully store a routes with different boardings and same destinations", func() {
 			Connect()
 
-			route := domain.Route{
+			route := routes.Route{
 				Boarding:    "GRU",
 				Destination: "CDG",
 				Cost:        75,
 			}
-			route2 := domain.Route{
+			route2 := routes.Route{
 				Boarding:    "ORL",
 				Destination: "CDG",
 				Cost:        5,
@@ -105,12 +106,12 @@ func TestDatabase(t *testing.T) {
 		g.It("should successfully store a routes with different boardings and destinations", func() {
 			Connect()
 
-			route := domain.Route{
+			route := routes.Route{
 				Boarding:    "GRU",
 				Destination: "CDG",
 				Cost:        75,
 			}
-			route2 := domain.Route{
+			route2 := routes.Route{
 				Boarding:    "BRC",
 				Destination: "SCL",
 				Cost:        5,
@@ -135,7 +136,7 @@ func TestDatabase(t *testing.T) {
 			boarding := "GRU"
 			destination := "ORL"
 			cost := 56
-			route := domain.Route{
+			route := routes.Route{
 				Boarding:    boarding,
 				Destination: destination,
 				Cost:        cost,
@@ -157,44 +158,44 @@ func TestDatabase(t *testing.T) {
 
 			result, err := GetRouteCost(boarding, destination)
 
-			g.Assert(err).Equal(NewRouteNotFoundErr())
+			g.Assert(err).Equal(errors.NewRouteNotFoundErr())
 			g.Assert(result).Equal(-1)
 		})
 
 		g.It("should successfully return a cost for different stored routes", func() {
 			Connect()
 
-			route := domain.Route{
+			route := routes.Route{
 				Boarding:    "GRU",
 				Destination: "BRC",
 				Cost:        10,
 			}
-			route2 := domain.Route{
+			route2 := routes.Route{
 				Boarding:    "BRC",
 				Destination: "SCL",
 				Cost:        5,
 			}
-			route3 := domain.Route{
+			route3 := routes.Route{
 				Boarding:    "GRU",
 				Destination: "CDG",
 				Cost:        75,
 			}
-			route4 := domain.Route{
+			route4 := routes.Route{
 				Boarding:    "GRU",
 				Destination: "SCL",
 				Cost:        20,
 			}
-			route5 := domain.Route{
+			route5 := routes.Route{
 				Boarding:    "GRU",
 				Destination: "ORL",
 				Cost:        56,
 			}
-			route6 := domain.Route{
+			route6 := routes.Route{
 				Boarding:    "ORL",
 				Destination: "CDG",
 				Cost:        5,
 			}
-			route7 := domain.Route{
+			route7 := routes.Route{
 				Boarding:    "SCL",
 				Destination: "ORL",
 				Cost:        20,
@@ -224,7 +225,7 @@ func TestDatabase(t *testing.T) {
 			g.Assert(err5).Equal(nil)
 			g.Assert(err6).Equal(nil)
 			g.Assert(err7).Equal(nil)
-			g.Assert(err8).Equal(NewRouteNotFoundErr())
+			g.Assert(err8).Equal(errors.NewRouteNotFoundErr())
 			g.Assert(result).Equal(10)
 			g.Assert(result2).Equal(5)
 			g.Assert(result3).Equal(75)
@@ -244,7 +245,7 @@ func TestDatabase(t *testing.T) {
 		g.It("should successfully store multiple routes", func() {
 			Connect()
 
-			routes := []domain.Route{
+			routes := []routes.Route{
 				{
 					Boarding:    "GRU",
 					Destination: "BRC",
@@ -300,7 +301,7 @@ func TestDatabase(t *testing.T) {
 			g.Assert(err5).Equal(nil)
 			g.Assert(err6).Equal(nil)
 			g.Assert(err7).Equal(nil)
-			g.Assert(err8).Equal(NewRouteNotFoundErr())
+			g.Assert(err8).Equal(errors.NewRouteNotFoundErr())
 			g.Assert(result).Equal(10)
 			g.Assert(result2).Equal(5)
 			g.Assert(result3).Equal(75)
