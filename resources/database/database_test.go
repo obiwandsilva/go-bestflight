@@ -2,6 +2,7 @@ package database
 
 import (
 	r "go-bestflight/domain/entities/routes"
+	"go-bestflight/domain/errors"
 	"testing"
 
 	"github.com/franela/goblin"
@@ -196,229 +197,229 @@ func TestDatabase(t *testing.T) {
 
 	})
 
-	// g.Describe("Tests for GetRouteCost", func() {
-	// 	g.BeforeEach(func() {
-	// 		Connect()
-	// 	})
+	g.Describe("Tests for GetRouteCost", func() {
+		g.BeforeEach(func() {
+			Connect()
+		})
 
-	// 	g.AfterEach(func() {
-	// 		truncate()
-	// 	})
+		g.AfterEach(func() {
+			truncate()
+		})
 
-	// 	g.It("should successfully return a cost for a stored route", func() {
-	// 		boarding := "GRU"
-	// 		destination := "ORL"
-	// 		cost := 56
-	// 		route := r.Route{
-	// 			Boarding:    boarding,
-	// 			Destination: destination,
-	// 			Cost:        cost,
-	// 		}
+		g.It("should successfully return a cost for a stored route", func() {
+			boarding := "GRU"
+			destination := "ORL"
+			cost := 56
+			route := r.Route{
+				Boarding:    boarding,
+				Destination: destination,
+				Cost:        cost,
+			}
 
-	// 		StoreRoute(route)
+			StoreRoute(route)
 
-	// 		result, err := GetRouteCost(boarding, destination)
+			result, err := GetRouteCost(boarding, destination)
 
-	// 		g.Assert(err).Equal(nil)
-	// 		g.Assert(result).Equal(cost)
-	// 	})
+			g.Assert(err).Equal(nil)
+			g.Assert(result).Equal(cost)
+		})
 
-	// 	g.It("should return an error for unexisting route", func() {
-	// 		boarding := "GRU"
-	// 		destination := "ORL"
+		g.It("should return an error for unexisting route", func() {
+			boarding := "GRU"
+			destination := "ORL"
 
-	// 		result, err := GetRouteCost(boarding, destination)
+			result, err := GetRouteCost(boarding, destination)
 
-	// 		g.Assert(err).Equal(errors.NewRouteNotFoundErr())
-	// 		g.Assert(result).Equal(-1)
-	// 	})
+			g.Assert(err).Equal(errors.NewRouteNotFoundErr())
+			g.Assert(result).Equal(-1)
+		})
 
-	// 	g.It("should successfully return a cost for different stored r", func() {
-	// 		route := r.Route{
-	// 			Boarding:    "GRU",
-	// 			Destination: "BRC",
-	// 			Cost:        10,
-	// 		}
-	// 		route2 := r.Route{
-	// 			Boarding:    "BRC",
-	// 			Destination: "SCL",
-	// 			Cost:        5,
-	// 		}
-	// 		route3 := r.Route{
-	// 			Boarding:    "GRU",
-	// 			Destination: "CDG",
-	// 			Cost:        75,
-	// 		}
-	// 		route4 := r.Route{
-	// 			Boarding:    "GRU",
-	// 			Destination: "SCL",
-	// 			Cost:        20,
-	// 		}
-	// 		route5 := r.Route{
-	// 			Boarding:    "GRU",
-	// 			Destination: "ORL",
-	// 			Cost:        56,
-	// 		}
-	// 		route6 := r.Route{
-	// 			Boarding:    "ORL",
-	// 			Destination: "CDG",
-	// 			Cost:        5,
-	// 		}
-	// 		route7 := r.Route{
-	// 			Boarding:    "SCL",
-	// 			Destination: "ORL",
-	// 			Cost:        20,
-	// 		}
+		g.It("should successfully return a cost for different stored r", func() {
+			route := r.Route{
+				Boarding:    "GRU",
+				Destination: "BRC",
+				Cost:        10,
+			}
+			route2 := r.Route{
+				Boarding:    "BRC",
+				Destination: "SCL",
+				Cost:        5,
+			}
+			route3 := r.Route{
+				Boarding:    "GRU",
+				Destination: "CDG",
+				Cost:        75,
+			}
+			route4 := r.Route{
+				Boarding:    "GRU",
+				Destination: "SCL",
+				Cost:        20,
+			}
+			route5 := r.Route{
+				Boarding:    "GRU",
+				Destination: "ORL",
+				Cost:        56,
+			}
+			route6 := r.Route{
+				Boarding:    "ORL",
+				Destination: "CDG",
+				Cost:        5,
+			}
+			route7 := r.Route{
+				Boarding:    "SCL",
+				Destination: "ORL",
+				Cost:        20,
+			}
 
-	// 		StoreRoute(route)
-	// 		StoreRoute(route2)
-	// 		StoreRoute(route3)
-	// 		StoreRoute(route4)
-	// 		StoreRoute(route5)
-	// 		StoreRoute(route6)
-	// 		StoreRoute(route7)
+			StoreRoute(route)
+			StoreRoute(route2)
+			StoreRoute(route3)
+			StoreRoute(route4)
+			StoreRoute(route5)
+			StoreRoute(route6)
+			StoreRoute(route7)
 
-	// 		result, err := GetRouteCost("GRU", "BRC")
-	// 		result2, err2 := GetRouteCost("BRC", "SCL")
-	// 		result3, err3 := GetRouteCost("GRU", "CDG")
-	// 		result4, err4 := GetRouteCost("GRU", "SCL")
-	// 		result5, err5 := GetRouteCost("GRU", "ORL")
-	// 		result6, err6 := GetRouteCost("ORL", "CDG")
-	// 		result7, err7 := GetRouteCost("SCL", "ORL")
-	// 		result8, err8 := GetRouteCost("A", "B")
+			result, err := GetRouteCost("GRU", "BRC")
+			result2, err2 := GetRouteCost("BRC", "SCL")
+			result3, err3 := GetRouteCost("GRU", "CDG")
+			result4, err4 := GetRouteCost("GRU", "SCL")
+			result5, err5 := GetRouteCost("GRU", "ORL")
+			result6, err6 := GetRouteCost("ORL", "CDG")
+			result7, err7 := GetRouteCost("SCL", "ORL")
+			result8, err8 := GetRouteCost("A", "B")
 
-	// 		g.Assert(err).Equal(nil)
-	// 		g.Assert(err2).Equal(nil)
-	// 		g.Assert(err3).Equal(nil)
-	// 		g.Assert(err4).Equal(nil)
-	// 		g.Assert(err5).Equal(nil)
-	// 		g.Assert(err6).Equal(nil)
-	// 		g.Assert(err7).Equal(nil)
-	// 		g.Assert(err8).Equal(errors.NewRouteNotFoundErr())
-	// 		g.Assert(result).Equal(10)
-	// 		g.Assert(result2).Equal(5)
-	// 		g.Assert(result3).Equal(75)
-	// 		g.Assert(result4).Equal(20)
-	// 		g.Assert(result5).Equal(56)
-	// 		g.Assert(result6).Equal(5)
-	// 		g.Assert(result7).Equal(20)
-	// 		g.Assert(result8).Equal(-1)
-	// 	})
-	// })
+			g.Assert(err).Equal(nil)
+			g.Assert(err2).Equal(nil)
+			g.Assert(err3).Equal(nil)
+			g.Assert(err4).Equal(nil)
+			g.Assert(err5).Equal(nil)
+			g.Assert(err6).Equal(nil)
+			g.Assert(err7).Equal(nil)
+			g.Assert(err8).Equal(errors.NewRouteNotFoundErr())
+			g.Assert(result).Equal(10)
+			g.Assert(result2).Equal(5)
+			g.Assert(result3).Equal(75)
+			g.Assert(result4).Equal(20)
+			g.Assert(result5).Equal(56)
+			g.Assert(result6).Equal(5)
+			g.Assert(result7).Equal(20)
+			g.Assert(result8).Equal(-1)
+		})
+	})
 
-	// g.Describe("Tests for StoreRoutes", func() {
-	// 	g.It("should successfully store multiple r", func() {
-	// 		Connect()
+	g.Describe("Tests for StoreRoutes", func() {
+		g.It("should successfully store multiple r", func() {
+			Connect()
 
-	// 		r := []r.Route{
-	// 			{
-	// 				Boarding:    "GRU",
-	// 				Destination: "BRC",
-	// 				Cost:        10,
-	// 			},
-	// 			{
-	// 				Boarding:    "BRC",
-	// 				Destination: "SCL",
-	// 				Cost:        5,
-	// 			},
-	// 			{
-	// 				Boarding:    "GRU",
-	// 				Destination: "CDG",
-	// 				Cost:        75,
-	// 			},
-	// 			{
-	// 				Boarding:    "GRU",
-	// 				Destination: "SCL",
-	// 				Cost:        20,
-	// 			},
-	// 			{
-	// 				Boarding:    "GRU",
-	// 				Destination: "ORL",
-	// 				Cost:        56,
-	// 			},
-	// 			{
-	// 				Boarding:    "ORL",
-	// 				Destination: "CDG",
-	// 				Cost:        5,
-	// 			},
-	// 			{
-	// 				Boarding:    "SCL",
-	// 				Destination: "ORL",
-	// 				Cost:        20,
-	// 			},
-	// 		}
+			r := []r.Route{
+				{
+					Boarding:    "GRU",
+					Destination: "BRC",
+					Cost:        10,
+				},
+				{
+					Boarding:    "BRC",
+					Destination: "SCL",
+					Cost:        5,
+				},
+				{
+					Boarding:    "GRU",
+					Destination: "CDG",
+					Cost:        75,
+				},
+				{
+					Boarding:    "GRU",
+					Destination: "SCL",
+					Cost:        20,
+				},
+				{
+					Boarding:    "GRU",
+					Destination: "ORL",
+					Cost:        56,
+				},
+				{
+					Boarding:    "ORL",
+					Destination: "CDG",
+					Cost:        5,
+				},
+				{
+					Boarding:    "SCL",
+					Destination: "ORL",
+					Cost:        20,
+				},
+			}
 
-	// 		StoreRoutes(r)
+			StoreRoutes(r)
 
-	// 		result, err := GetRouteCost("GRU", "BRC")
-	// 		result2, err2 := GetRouteCost("BRC", "SCL")
-	// 		result3, err3 := GetRouteCost("GRU", "CDG")
-	// 		result4, err4 := GetRouteCost("GRU", "SCL")
-	// 		result5, err5 := GetRouteCost("GRU", "ORL")
-	// 		result6, err6 := GetRouteCost("ORL", "CDG")
-	// 		result7, err7 := GetRouteCost("SCL", "ORL")
-	// 		result8, err8 := GetRouteCost("A", "B")
+			result, err := GetRouteCost("GRU", "BRC")
+			result2, err2 := GetRouteCost("BRC", "SCL")
+			result3, err3 := GetRouteCost("GRU", "CDG")
+			result4, err4 := GetRouteCost("GRU", "SCL")
+			result5, err5 := GetRouteCost("GRU", "ORL")
+			result6, err6 := GetRouteCost("ORL", "CDG")
+			result7, err7 := GetRouteCost("SCL", "ORL")
+			result8, err8 := GetRouteCost("A", "B")
 
-	// 		g.Assert(err).Equal(nil)
-	// 		g.Assert(err2).Equal(nil)
-	// 		g.Assert(err3).Equal(nil)
-	// 		g.Assert(err4).Equal(nil)
-	// 		g.Assert(err5).Equal(nil)
-	// 		g.Assert(err6).Equal(nil)
-	// 		g.Assert(err7).Equal(nil)
-	// 		g.Assert(err8).Equal(errors.NewRouteNotFoundErr())
-	// 		g.Assert(result).Equal(10)
-	// 		g.Assert(result2).Equal(5)
-	// 		g.Assert(result3).Equal(75)
-	// 		g.Assert(result4).Equal(20)
-	// 		g.Assert(result5).Equal(56)
-	// 		g.Assert(result6).Equal(5)
-	// 		g.Assert(result7).Equal(20)
-	// 		g.Assert(result8).Equal(-1)
+			g.Assert(err).Equal(nil)
+			g.Assert(err2).Equal(nil)
+			g.Assert(err3).Equal(nil)
+			g.Assert(err4).Equal(nil)
+			g.Assert(err5).Equal(nil)
+			g.Assert(err6).Equal(nil)
+			g.Assert(err7).Equal(nil)
+			g.Assert(err8).Equal(errors.NewRouteNotFoundErr())
+			g.Assert(result).Equal(10)
+			g.Assert(result2).Equal(5)
+			g.Assert(result3).Equal(75)
+			g.Assert(result4).Equal(20)
+			g.Assert(result5).Equal(56)
+			g.Assert(result6).Equal(5)
+			g.Assert(result7).Equal(20)
+			g.Assert(result8).Equal(-1)
 
-	// 		truncate()
-	// 	})
-	// })
+			truncate()
+		})
+	})
 
-	// g.Describe("Tests for StoreAirport", func() {
-	// 	g.It("should successfully store an airport", func() {
-	// 		Connect()
+	g.Describe("Tests for StoreAirport", func() {
+		g.It("should successfully store an airport", func() {
+			Connect()
 
-	// 		airport := "GRU"
-	// 		result := StoreAirport(airport)
+			airport := "GRU"
+			result := StoreAirport(airport)
 
-	// 		g.Assert(result).Equal(airport)
+			g.Assert(result).Equal(airport)
 
-	// 		truncate()
-	// 	})
-	// })
+			truncate()
+		})
+	})
 
-	// g.Describe("Tests for GetAllAirports", func() {
-	// 	g.It("should successfully return all stored airports", func() {
-	// 		Connect()
+	g.Describe("Tests for GetAllAirports", func() {
+		g.It("should successfully return all stored airports", func() {
+			Connect()
 
-	// 		airports := map[string]struct{}{
-	// 			"GRU": {},
-	// 			"CDG": {},
-	// 			"ORL": {},
-	// 			"BRC": {},
-	// 		}
+			airports := map[string]struct{}{
+				"GRU": {},
+				"CDG": {},
+				"ORL": {},
+				"BRC": {},
+			}
 
-	// 		for airport := range airports {
-	// 			StoreAirport(airport)
-	// 		}
+			for airport := range airports {
+				StoreAirport(airport)
+			}
 
-	// 		result := GetAllAirports()
+			result := GetAllAirports()
 
-	// 		g.Assert(len(result)).Equal(4)
+			g.Assert(len(result)).Equal(4)
 
-	// 		for _, airport := range result {
-	// 			_, ok := airports[airport]
+			for _, airport := range result {
+				_, ok := airports[airport]
 
-	// 			g.Assert(ok).Equal(true)
-	// 		}
+				g.Assert(ok).Equal(true)
+			}
 
-	// 		truncate()
-	// 	})
-	// })
+			truncate()
+		})
+	})
 }
