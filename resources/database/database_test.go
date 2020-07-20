@@ -11,14 +11,20 @@ import (
 func TestDatabase(t *testing.T) {
 	g := goblin.Goblin(t)
 
-	var db *Database
-
 	g.Describe("Tests for Connect", func() {
 		g.It("should always return the same instance of db", func() {
-			db = Connect()
-			db2 := Connect()
+			Connect()
 
-			g.Assert(db).Equal(db2)
+			instance.airportTable["GRU"] = struct{}{}
+			instance.airportTable["SCL"] = struct{}{}
+
+			Connect()
+
+			_, ok := instance.airportTable["GRU"]
+			_, ok2 := instance.airportTable["SCL"]
+
+			g.Assert(ok).Equal(true)
+			g.Assert(ok2).Equal(true)
 		})
 	})
 

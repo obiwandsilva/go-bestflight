@@ -19,15 +19,13 @@ var (
 )
 
 // Connect ...
-func Connect() *Database {
+func Connect() {
 	once.Do(func() {
 		instance = Database{
 			routeTable:   make(map[string]map[string]int),
 			airportTable: make(map[string]struct{}),
 		}
 	})
-
-	return &instance
 }
 
 func truncate() {
