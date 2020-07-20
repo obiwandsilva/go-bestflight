@@ -2,7 +2,7 @@ package file
 
 import (
 	"bufio"
-	r "go-bestflight/domain/routes"
+	r "go-bestflight/domain/entities/routes"
 	"log"
 	"os"
 	"sync"

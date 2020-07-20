@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	r "go-bestflight/domain/routes"
+	r "go-bestflight/domain/entities/routes"
 	"log"
 	"os"
 	"regexp"

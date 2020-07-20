@@ -2,8 +2,8 @@ package routeservice
 
 import (
 	"container/heap"
+	r "go-bestflight/domain/entities/routes"
 	"go-bestflight/domain/errors"
-	r "go-bestflight/domain/routes"
 	"strings"
 )
 

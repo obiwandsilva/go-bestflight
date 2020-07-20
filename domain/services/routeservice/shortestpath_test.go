@@ -2,7 +2,7 @@ package routeservice
 
 import (
 	"fmt"
-	r "go-bestflight/domain/routes"
+	r "go-bestflight/domain/entities/routes"
 	"testing"
 
 	"github.com/franela/goblin"

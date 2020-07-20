@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"go-bestflight/services/routeservice"
+	"go-bestflight/domain/services/routeservice"
 
 	"github.com/gin-gonic/gin"
 )

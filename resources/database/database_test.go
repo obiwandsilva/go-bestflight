@@ -1,8 +1,8 @@
 package database
 
 import (
+	r "go-bestflight/domain/entities/routes"
 	"go-bestflight/domain/errors"
-	"go-bestflight/domain/routes"
 	"testing"
 
 	"github.com/franela/goblin"
@@ -38,7 +38,7 @@ func TestDatabase(t *testing.T) {
 		})
 
 		g.It("should successfully store a route", func() {
-			route := routes.Route{
+			route := r.Route{
 				Boarding:    "GRU",
 				Destination: "CDG",
 				Cost:        75,
@@ -49,12 +49,12 @@ func TestDatabase(t *testing.T) {
 		})
 
 		g.It("should not return errors when storing the same route multiple times", func() {
-			route1 := routes.Route{
+			route1 := r.Route{
 				Boarding:    "GRU",
 				Destination: "CDG",
 				Cost:        75,
 			}
-			route2 := routes.Route{
+			route2 := r.Route{
 				Boarding:    "GRU",
 				Destination: "CDG",
 				Cost:        75,
@@ -67,13 +67,13 @@ func TestDatabase(t *testing.T) {
 			g.Assert(result).Equal(route2)
 		})
 
-		g.It("should successfully store a routes with equal boardings and different destinations", func() {
-			route := routes.Route{
+		g.It("should successfully store a r with equal boardings and different destinations", func() {
+			route := r.Route{
 				Boarding:    "GRU",
 				Destination: "CDG",
 				Cost:        75,
 			}
-			route2 := routes.Route{
+			route2 := r.Route{
 				Boarding:    "GRU",
 				Destination: "ORL",
 				Cost:        56,
@@ -86,13 +86,13 @@ func TestDatabase(t *testing.T) {
 			g.Assert(result).Equal(route2)
 		})
 
-		g.It("should successfully store a routes with different boardings and same destinations", func() {
-			route := routes.Route{
+		g.It("should successfully store a r with different boardings and same destinations", func() {
+			route := r.Route{
 				Boarding:    "GRU",
 				Destination: "CDG",
 				Cost:        75,
 			}
-			route2 := routes.Route{
+			route2 := r.Route{
 				Boarding:    "ORL",
 				Destination: "CDG",
 				Cost:        5,
@@ -105,13 +105,13 @@ func TestDatabase(t *testing.T) {
 			g.Assert(result).Equal(route2)
 		})
 
-		g.It("should successfully store a routes with different boardings and destinations", func() {
-			route := routes.Route{
+		g.It("should successfully store a r with different boardings and destinations", func() {
+			route := r.Route{
 				Boarding:    "GRU",
 				Destination: "CDG",
 				Cost:        75,
 			}
-			route2 := routes.Route{
+			route2 := r.Route{
 				Boarding:    "BRC",
 				Destination: "SCL",
 				Cost:        5,
@@ -138,7 +138,7 @@ func TestDatabase(t *testing.T) {
 			boarding := "GRU"
 			destination := "ORL"
 			cost := 56
-			route := routes.Route{
+			route := r.Route{
 				Boarding:    boarding,
 				Destination: destination,
 				Cost:        cost,
@@ -162,38 +162,38 @@ func TestDatabase(t *testing.T) {
 			g.Assert(result).Equal(-1)
 		})
 
-		g.It("should successfully return a cost for different stored routes", func() {
-			route := routes.Route{
+		g.It("should successfully return a cost for different stored r", func() {
+			route := r.Route{
 				Boarding:    "GRU",
 				Destination: "BRC",
 				Cost:        10,
 			}
-			route2 := routes.Route{
+			route2 := r.Route{
 				Boarding:    "BRC",
 				Destination: "SCL",
 				Cost:        5,
 			}
-			route3 := routes.Route{
+			route3 := r.Route{
 				Boarding:    "GRU",
 				Destination: "CDG",
 				Cost:        75,
 			}
-			route4 := routes.Route{
+			route4 := r.Route{
 				Boarding:    "GRU",
 				Destination: "SCL",
 				Cost:        20,
 			}
-			route5 := routes.Route{
+			route5 := r.Route{
 				Boarding:    "GRU",
 				Destination: "ORL",
 				Cost:        56,
 			}
-			route6 := routes.Route{
+			route6 := r.Route{
 				Boarding:    "ORL",
 				Destination: "CDG",
 				Cost:        5,
 			}
-			route7 := routes.Route{
+			route7 := r.Route{
 				Boarding:    "SCL",
 				Destination: "ORL",
 				Cost:        20,
@@ -236,10 +236,10 @@ func TestDatabase(t *testing.T) {
 	})
 
 	g.Describe("Tests for StoreRoutes", func() {
-		g.It("should successfully store multiple routes", func() {
+		g.It("should successfully store multiple r", func() {
 			Connect()
 
-			routes := []routes.Route{
+			r := []r.Route{
 				{
 					Boarding:    "GRU",
 					Destination: "BRC",
@@ -277,7 +277,7 @@ func TestDatabase(t *testing.T) {
 				},
 			}
 
-			StoreRoutes(routes)
+			StoreRoutes(r)
 
 			result, err := GetRouteCost("GRU", "BRC")
 			result2, err2 := GetRouteCost("BRC", "SCL")

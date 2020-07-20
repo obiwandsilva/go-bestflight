@@ -1,7 +1,7 @@
 package cache
 
 import (
-	r "go-bestflight/domain/routes"
+	r "go-bestflight/domain/entities/routes"
 	"sync"
 )
 

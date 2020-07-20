@@ -2,7 +2,7 @@ package routesrepository
 
 import (
 	"errors"
-	"go-bestflight/domain/routes"
+	"go-bestflight/domain/entities/routes"
 )
 
 // StoreRoute ...

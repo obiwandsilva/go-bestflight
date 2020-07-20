@@ -1,8 +1,8 @@
 package database
 
 import (
+	r "go-bestflight/domain/entities/routes"
 	"go-bestflight/domain/errors"
-	r "go-bestflight/domain/routes"
 	"sync"
 )
 
