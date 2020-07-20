@@ -2,7 +2,7 @@ package database
 
 import (
 	"go-bestflight/domain/errors"
-	"go-bestflight/domain/routes"
+	r "go-bestflight/domain/routes"
 	"sync"
 )
 
@@ -14,50 +14,50 @@ type Database struct {
 }
 
 var (
-	db   Database
-	once sync.Once
+	instance Database
+	once     sync.Once
 )
 
 // Connect ...
 func Connect() *Database {
 	once.Do(func() {
-		db = Database{
+		instance = Database{
 			routeTable:   make(map[string]map[string]int),
 			airportTable: make(map[string]struct{}),
 		}
 	})
 
-	return &db
+	return &instance
 }
 
 func truncate() {
-	db = Database{
+	instance = Database{
 		routeTable:   make(map[string]map[string]int),
 		airportTable: make(map[string]struct{}),
 	}
 }
 
 // StoreRoute ...
-func StoreRoute(route routes.Route) routes.Route {
-	db.Lock()
-	defer db.Unlock()
+func StoreRoute(route r.Route) r.Route {
+	instance.Lock()
+	defer instance.Unlock()
 
-	dest, okBoarding := db.routeTable[route.Boarding]
+	dest, okBoarding := instance.routeTable[route.Boarding]
 
 	if okBoarding {
 		_, okDestination := dest[route.Destination]
 
 		if okDestination {
-			db.routeTable[route.Boarding][route.Destination] = route.Cost
+			instance.routeTable[route.Boarding][route.Destination] = route.Cost
 			return route
 		}
 
-		db.routeTable[route.Boarding][route.Destination] = route.Cost
+		instance.routeTable[route.Boarding][route.Destination] = route.Cost
 
 		return route
 	}
 
-	db.routeTable[route.Boarding] = map[string]int{
+	instance.routeTable[route.Boarding] = map[string]int{
 		route.Destination: route.Cost,
 	}
 
@@ -66,10 +66,10 @@ func StoreRoute(route routes.Route) routes.Route {
 
 // GetRouteCost ...
 func GetRouteCost(boarding, destination string) (int, error) {
-	db.RLock()
-	defer db.RUnlock()
+	instance.RLock()
+	defer instance.RUnlock()
 
-	destinations, ok := db.routeTable[boarding]
+	destinations, ok := instance.routeTable[boarding]
 	if !ok {
 		return -1, errors.NewRouteNotFoundErr()
 	}
@@ -83,7 +83,7 @@ func GetRouteCost(boarding, destination string) (int, error) {
 }
 
 // StoreRoutes ...
-func StoreRoutes(routes []routes.Route) {
+func StoreRoutes(routes []r.Route) {
 	for _, route := range routes {
 		StoreRoute(route)
 	}
@@ -91,22 +91,22 @@ func StoreRoutes(routes []routes.Route) {
 
 // StoreAirport ...
 func StoreAirport(airport string) string {
-	db.Lock()
-	defer db.Unlock()
+	instance.Lock()
+	defer instance.Unlock()
 
-	db.airportTable[airport] = struct{}{}
+	instance.airportTable[airport] = struct{}{}
 
 	return airport
 }
 
 // GetAllAirports ...
 func GetAllAirports() []string {
-	db.RLock()
-	defer db.RUnlock()
+	instance.RLock()
+	defer instance.RUnlock()
 
 	airports := []string{}
 
-	for airport := range db.airportTable {
+	for airport := range instance.airportTable {
 		airports = append(airports, airport)
 	}
 
