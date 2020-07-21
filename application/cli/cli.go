@@ -3,6 +3,7 @@ package cli
 import (
 	"bufio"
 	"fmt"
+	"go-bestflight/domain/services/routeservice"
 	"log"
 	"os"
 	"runtime"
@@ -36,10 +37,31 @@ func getInput() string {
 	return input
 }
 
+func getBoardingAndDestination(input string) (string, string) {
+	components := strings.Split(input, "-")
+
+	if len(components) != 2 {
+		return "", ""
+	}
+
+	return components[0], components[1]
+}
+
 // StartAdvisor starts the agent that will be asking for desired routes by command line.
 func StartAdvisor() {
+	log.Println("starting Advisor...")
+
 	for {
 		fmt.Print("please enter the route: ")
-		getInput()
+		input := getInput()
+		board, dest := getBoardingAndDestination(input)
+
+		bestRoute, err := routeservice.GetBestRoute(board, dest)
+		if err != nil {
+			fmt.Println(err.Error())
+			continue
+		}
+
+		fmt.Printf("best route: %s > $%d\n", bestRoute.Route, bestRoute.Cost)
 	}
 }
