@@ -11,7 +11,11 @@ const (
 	max = 1000000
 )
 
-func isValidAirport(airport string) bool {
+func isValidCost(cost int) bool {
+	return (cost >= min) && (cost <= max)
+}
+
+func IsValidAirport(airport string) bool {
 	pattern := `^[A-Z]{3}$`
 	match, err := regexp.MatchString(pattern, airport)
 	if err != nil {
@@ -21,13 +25,9 @@ func isValidAirport(airport string) bool {
 	return match
 }
 
-func isValidCost(cost int) bool {
-	return (cost >= min) && (cost <= max)
-}
-
 // IsValidRoute ...
 func IsValidRoute(route r.Route) bool {
-	return isValidAirport(route.Boarding) &&
-		isValidAirport(route.Destination) &&
+	return IsValidAirport(route.Boarding) &&
+		IsValidAirport(route.Destination) &&
 		isValidCost(route.Cost)
 }

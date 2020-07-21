@@ -10,18 +10,18 @@ import (
 func TestFile(t *testing.T) {
 	g := goblin.Goblin(t)
 
-	g.Describe("Tests for isValidAirport", func() {
+	g.Describe("Tests for IsValidAirport", func() {
 		g.It("should return true for valid airport formats and false for invalid ones", func() {
-			g.Assert(isValidAirport("ABC")).IsTrue()
+			g.Assert(IsValidAirport("ABC")).IsTrue()
 
-			g.Assert(isValidAirport("GR")).IsFalse()
-			g.Assert(isValidAirport("GRUU")).IsFalse()
-			g.Assert(isValidAirport("grU")).IsFalse()
-			g.Assert(isValidAirport("abc")).IsFalse()
-			g.Assert(isValidAirport("1BC")).IsFalse()
-			g.Assert(isValidAirport("@!#")).IsFalse()
-			g.Assert(isValidAirport(" ")).IsFalse()
-			g.Assert(isValidAirport("")).IsFalse()
+			g.Assert(IsValidAirport("GR")).IsFalse()
+			g.Assert(IsValidAirport("GRUU")).IsFalse()
+			g.Assert(IsValidAirport("grU")).IsFalse()
+			g.Assert(IsValidAirport("abc")).IsFalse()
+			g.Assert(IsValidAirport("1BC")).IsFalse()
+			g.Assert(IsValidAirport("@!#")).IsFalse()
+			g.Assert(IsValidAirport(" ")).IsFalse()
+			g.Assert(IsValidAirport("")).IsFalse()
 		})
 	})
 

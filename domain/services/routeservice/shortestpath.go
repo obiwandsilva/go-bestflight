@@ -24,13 +24,13 @@ const (
 )
 
 func convertRouteToNamed(route []int, indxs indexes) string {
-	var strBuilder strings.Builder
+	airports := []string{}
 
 	for _, node := range route {
-		strBuilder.WriteString(indxs[node].(string))
+		airports = append(airports, indxs[node].(string))
 	}
 
-	return strBuilder.String()
+	return strings.Join(airports, " - ")
 }
 
 func findBestRoute(airports []string, routes r.Routes, boarding, destination string) (r.BestRoute, error) {

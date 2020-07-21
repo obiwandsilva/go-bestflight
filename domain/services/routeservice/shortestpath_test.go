@@ -1,7 +1,6 @@
 package routeservice
 
 import (
-	"fmt"
 	r "go-bestflight/domain/entities/routes"
 	"testing"
 
@@ -290,7 +289,7 @@ func TestShortestPath(t *testing.T) {
 			g.Assert(cost).Equal(31)
 		})
 
-		g.It("should retrieve the shortest path after add new routes disassociated from others", func() {
+		g.It("should retrieve maximum cost for start and end from different groups and without connection", func() {
 			newRoutes := make(r.Routes)
 			for k, v := range routes {
 				newRoutes[k] = v
@@ -313,16 +312,13 @@ func TestShortestPath(t *testing.T) {
 
 			bestRoute, cost := DijkstraSTP(args)
 
-			fmt.Println(indxs, bestRoute, cost)
+			expectedRoute := []int{
+				indxs["ORL"].(int),
+				indxs["X"].(int),
+			}
 
-			// expectedRoute := []int{
-			// 	indxs["X"].(int),
-			// 	indxs["Y"].(int),
-			// 	indxs["Z"].(int),
-			// }
-
-			// g.Assert(bestRoute).Equal(expectedRoute)
-			// g.Assert(cost).Equal(31)
+			g.Assert(bestRoute).Equal(expectedRoute)
+			g.Assert(cost).Equal(maxInt)
 		})
 	})
 }
