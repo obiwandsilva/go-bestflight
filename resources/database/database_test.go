@@ -34,7 +34,7 @@ func TestDatabase(t *testing.T) {
 		})
 
 		g.AfterEach(func() {
-			truncate()
+			Truncate()
 		})
 
 		g.It("should successfully store a route", func() {
@@ -131,7 +131,7 @@ func TestDatabase(t *testing.T) {
 		})
 
 		g.AfterEach(func() {
-			truncate()
+			Truncate()
 		})
 
 		g.It("should successfully delete a stored route", func() {
@@ -203,7 +203,7 @@ func TestDatabase(t *testing.T) {
 		})
 
 		g.AfterEach(func() {
-			truncate()
+			Truncate()
 		})
 
 		g.It("should successfully return a cost for a stored route", func() {
@@ -377,7 +377,7 @@ func TestDatabase(t *testing.T) {
 			g.Assert(result7).Equal(20)
 			g.Assert(result8).Equal(-1)
 
-			truncate()
+			Truncate()
 		})
 	})
 
@@ -390,7 +390,7 @@ func TestDatabase(t *testing.T) {
 
 			g.Assert(result).Equal(airport)
 
-			truncate()
+			Truncate()
 		})
 	})
 
@@ -419,7 +419,7 @@ func TestDatabase(t *testing.T) {
 				g.Assert(ok).Equal(true)
 			}
 
-			truncate()
+			Truncate()
 		})
 	})
 }

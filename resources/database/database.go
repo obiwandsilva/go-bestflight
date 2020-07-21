@@ -28,7 +28,7 @@ func Connect() {
 	})
 }
 
-func truncate() {
+func Truncate() {
 	instance = Database{
 		routeTable:   make(map[string]map[string]int),
 		airportTable: make(map[string]struct{}),
