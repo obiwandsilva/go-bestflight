@@ -87,8 +87,8 @@ Example:
 
 Status Codes:
 
- - *201*: if successfully created
- - *200*: if the route already exists
+ - *200*: if successfully found
+ - *204*: searched, but not found
  - *400*: malformed route
 
 Response body:
