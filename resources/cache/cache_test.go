@@ -23,7 +23,7 @@ func TestCache(t *testing.T) {
 			g.Assert(ok).Equal(true)
 			g.Assert(connections).Equal([]r.Connection{{Airport: "CDG", Cost: 5}})
 
-			truncate()
+			Truncate()
 		})
 	})
 
@@ -33,7 +33,7 @@ func TestCache(t *testing.T) {
 		})
 
 		g.AfterEach(func() {
-			truncate()
+			Truncate()
 		})
 
 		g.It("should successfully insert a new route to the cache", func() {
@@ -128,7 +128,7 @@ func TestCache(t *testing.T) {
 				r.Connection{Airport: route3.Destination, Cost: route3.Cost},
 			)
 
-			truncate()
+			Truncate()
 		})
 	})
 
@@ -166,7 +166,7 @@ func TestCache(t *testing.T) {
 				r.Connection{Airport: route3.Destination, Cost: route3.Cost},
 			)
 
-			truncate()
+			Truncate()
 		})
 	})
 }

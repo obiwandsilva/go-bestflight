@@ -26,7 +26,8 @@ func Connect() {
 	})
 }
 
-func truncate() {
+// Truncate ...
+func Truncate() {
 	instance = &Memcache{
 		routes: make(r.Routes),
 	}
