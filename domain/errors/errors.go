@@ -1,5 +1,7 @@
 package errors
 
+import "fmt"
+
 // InvalidRouteErr define errors with route format.
 type InvalidRouteErr struct {
 	message string
@@ -12,6 +14,34 @@ func (e *InvalidRouteErr) Error() string {
 func NewInvalidRouteErr() *InvalidRouteErr {
 	return &InvalidRouteErr{
 		message: "invalid route format",
+	}
+}
+
+type RouteAlreadyExistErr struct {
+	message string
+}
+
+func (e *RouteAlreadyExistErr) Error() string {
+	return e.message
+}
+
+func NewRouteAlreadyExistErr() *RouteAlreadyExistErr {
+	return &RouteAlreadyExistErr{
+		message: "route already created",
+	}
+}
+
+type InvalidAirportErr struct {
+	message string
+}
+
+func (e *InvalidAirportErr) Error() string {
+	return e.message
+}
+
+func NewInvalidAirportErr(cause string) *InvalidAirportErr {
+	return &InvalidAirportErr{
+		message: fmt.Sprintf("invalid airport: %s", cause),
 	}
 }
 
