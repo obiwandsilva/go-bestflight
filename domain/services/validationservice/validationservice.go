@@ -1,6 +1,7 @@
 package validationservice
 
 import (
+	r "go-bestflight/domain/entities/routes"
 	"log"
 	"regexp"
 )
@@ -10,8 +11,7 @@ const (
 	max = 1000000
 )
 
-// IsValidAirport returns true if an airport name matches the expected format.
-func IsValidAirport(airport string) bool {
+func isValidAirport(airport string) bool {
 	pattern := `^[A-Z]{3}$`
 	match, err := regexp.MatchString(pattern, airport)
 	if err != nil {
@@ -21,6 +21,13 @@ func IsValidAirport(airport string) bool {
 	return match
 }
 
-func IsValidCost(cost int) bool {
+func isValidCost(cost int) bool {
 	return (cost >= min) && (cost <= max)
+}
+
+// IsValidRoute ...
+func IsValidRoute(route r.Route) bool {
+	return isValidAirport(route.Boarding) &&
+		isValidAirport(route.Destination) &&
+		isValidCost(route.Cost)
 }
