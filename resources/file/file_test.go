@@ -16,9 +16,9 @@ func TestFile(t *testing.T) {
 
 	filePath := "test.csv"
 
-	g.Describe("Tests for ", func() {
+	g.Describe("Tests for Sync", func() {
 		g.It("should create one instance on multiple calls and create file if it does not exist", func() {
-			remove(filePath)
+			Remove()
 
 			_, err := os.Stat(filePath)
 			g.Assert(os.IsNotExist(err)).IsTrue()
@@ -71,9 +71,15 @@ func TestFile(t *testing.T) {
 	})
 
 	g.Describe("Tests for Write", func() {
-		g.It("should successfully write to file", func() {
-			Truncate()
+		g.BeforeEach(func() {
+			Reset(filePath)
+		})
 
+		g.AfterEach(func() {
+			Remove()
+		})
+
+		g.It("should successfully write to file", func() {
 			route := r.Route{
 				Boarding:    "GRU",
 				Destination: "CDG",
@@ -91,8 +97,6 @@ func TestFile(t *testing.T) {
 		})
 
 		g.It("should successfully write to file concurrently", func() {
-			Truncate()
-
 			route := r.Route{
 				Boarding:    "GRU",
 				Destination: "CDG",
@@ -166,7 +170,7 @@ func TestFile(t *testing.T) {
 
 	g.Describe("Tests for ReadFile", func() {
 		g.It("should return a list with all the written routes in the file", func() {
-			Truncate()
+			Reset(filePath)
 
 			route := r.Route{
 				Boarding:    "GRU",
@@ -207,8 +211,8 @@ func TestFile(t *testing.T) {
 			g.Assert(routes[2]).Equal(route3)
 			g.Assert(routes[3]).Equal(route4)
 			g.Assert(routes[4]).Equal(route5)
+
+			Remove()
 		})
 	})
-
-	remove(filePath)
 }

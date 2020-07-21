@@ -24,33 +24,45 @@ var (
 	once     sync.Once
 )
 
+func openOrCreate(filePath string, source string) {
+	file, err := os.OpenFile(filePath, os.O_CREATE|os.O_RDWR, 0666)
+	if err != nil && source == "sync" {
+		log.Fatal(err)
+	}
+
+	err = file.Close()
+	if err != nil && source == "sync" {
+		log.Fatal(err)
+	}
+
+	instance = RoutesFile{
+		filePath: filePath,
+	}
+}
+
 // Sync ...
 func Sync(filePath string) {
 	once.Do(func() {
-		file, err := os.OpenFile(filePath, os.O_CREATE|os.O_RDWR, 0666)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		err = file.Close()
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		instance = RoutesFile{
-			filePath: filePath,
-		}
+		openOrCreate(filePath, "sync")
 	})
 }
 
-// Only for tests.
-func remove(filePath string) {
-	os.Remove(filePath)
+// Remove must be used ONLY for tests.
+func Remove() {
+	if isSynced() {
+		os.Remove(instance.filePath)
+	}
 }
 
-// Truncate must be used only for tests.
-func Truncate() {
-	os.Truncate(instance.filePath, 0)
+// Reset must be used ONLY for tests.
+func Reset(filePath string) {
+	Remove()
+
+	openOrCreate(filePath, "reset")
+}
+
+func isSynced() bool {
+	return len(instance.filePath) > 0
 }
 
 func cleanLine(line string) string {
