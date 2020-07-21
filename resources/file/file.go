@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	r "go-bestflight/domain/entities/routes"
-	validation "go-bestflight/domain/services/validationservice"
 	"log"
 	"os"
 	"strconv"
@@ -79,11 +78,6 @@ func lineToRoute(line string, lineN int) (r.Route, error) {
 
 	boarding := strings.ToUpper(components[0])
 	destination := strings.ToUpper(components[1])
-
-	if !validation.IsValidAirport(boarding) || !validation.IsValidAirport(destination) {
-		log.Printf("invalid airport format at line: %d\n", lineN)
-		return r.Route{}, errors.New("invalid airport format")
-	}
 
 	cost, err := strconv.Atoi(components[2])
 	if err != nil {

@@ -45,16 +45,13 @@ func TestFile(t *testing.T) {
 		})
 
 		g.It("should return error for invalid airport format", func() {
-			_, err := lineToRoute("GR,CDG,75", 1)
+			_, err := lineToRoute("CDG,75", 1)
 			g.Assert(err != nil).IsTrue()
 
-			_, err = lineToRoute("GRU,CD,75", 2)
+			_, err = lineToRoute("GRU,CD,,75", 2)
 			g.Assert(err != nil).IsTrue()
 
-			_, err = lineToRoute("GRU,1DG,75", 3)
-			g.Assert(err != nil).IsTrue()
-
-			_, err = lineToRoute("GR U,CDG,75", 4)
+			_, err = lineToRoute("gru", 3)
 			g.Assert(err != nil).IsTrue()
 		})
 
