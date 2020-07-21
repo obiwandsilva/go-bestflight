@@ -71,11 +71,15 @@ func GetBestRoute(boarding string, destination string) (r.BestRoute, error) {
 	dest := strings.ToUpper(destination)
 
 	if !validation.IsValidAirport(board) || !validation.IsValidAirport(dest) {
-		return r.BestRoute{}, e.NewInvalidAirportErr("invalid")
+		return r.BestRoute{}, e.NewInvalidAirportErr("malformed")
 	}
 
 	if !airportrepository.IsRegistered(board) || !airportrepository.IsRegistered(dest) {
 		return r.BestRoute{}, e.NewInvalidAirportErr("not registered")
+	}
+
+	if !routerepository.HasConnection(board) {
+		return r.BestRoute{}, e.NewBestRouteNotFoundErr()
 	}
 
 	airports := airportrepository.GetAllAirports()

@@ -354,7 +354,7 @@ func TestRouteService(t *testing.T) {
 			g.Assert(err).Equal(errors.NewInvalidAirportErr("not registered"))
 		})
 
-		g.It("should return BestRouteNotFoundErr when a route is not possible to be found", func() {
+		g.It("should return BestRouteNotFoundErr when a route is unreachable", func() {
 			filePath := "test.csv"
 			defer file.Remove()
 
