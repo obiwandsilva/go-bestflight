@@ -45,3 +45,7 @@ func RouteExists(boarding, destination string) bool {
 
 	return true
 }
+
+func HasConnection(boarding string) bool {
+	return database.HasConnection(boarding)
+}

@@ -93,6 +93,12 @@ func GetRouteCost(boarding, destination string) (int, error) {
 	return cost, nil
 }
 
+func HasConnection(boarding string) bool {
+	_, ok := instance.routeTable[boarding]
+
+	return ok
+}
+
 // StoreRoutes ...
 func StoreRoutes(routes []r.Route) {
 	for _, route := range routes {
