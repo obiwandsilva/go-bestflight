@@ -1,2 +1,4 @@
 resources/file/test.csv
 main.go
+info.log
+*.csv
