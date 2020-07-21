@@ -11,10 +11,17 @@ type indexes map[interface{}]interface{}
 
 type routesGraph [][]r.Connection
 
+type mapper struct {
+	indxs     indexes
+	distances []int
+	previous  []int
+}
+
 type dijkstraArgs struct {
 	start int
 	end   int
 	dist  []int
+	prev  []int
 	indxs indexes
 	g     routesGraph
 }
@@ -33,41 +40,23 @@ func convertRouteToNamed(route []int, indxs indexes) string {
 	return strings.Join(airports, " - ")
 }
 
-func findBestRoute(airports []string, routes r.Routes, boarding, destination string) (r.BestRoute, error) {
-	indexes, distances := buildIndexesAndDistance(airports)
-	g := buildGraph(routes, indexes, len(distances))
-	args := dijkstraArgs{
-		start: indexes[boarding].(int),
-		end:   indexes[destination].(int),
-		dist:  distances,
-		indxs: indexes,
-		g:     g,
-	}
-	bestRoute, cost := DijkstraSTP(args)
-
-	if cost == maxInt {
-		return r.BestRoute{}, errors.NewBestRouteNotFoundErr()
-	}
-
-	best := r.BestRoute{
-		Route: convertRouteToNamed(bestRoute, indexes),
-		Cost:  cost,
-	}
-
-	return best, nil
-}
-
-func buildIndexesAndDistance(airports []string) (indexes, []int) {
+func buildMapper(airports []string) mapper {
 	indxs := make(indexes)
 	distances := make([]int, len(airports))
+	previous := make([]int, len(airports))
 
 	for i, airport := range airports {
 		indxs[airport] = i
 		indxs[i] = airport
 		distances[i] = maxInt
+		previous[i] = -1
 	}
 
-	return indxs, distances
+	return mapper{
+		indxs:     indxs,
+		distances: distances,
+		previous:  previous,
+	}
 }
 
 func buildGraph(routes r.Routes, indxs indexes, graphSize int) routesGraph {
@@ -96,9 +85,8 @@ func reverseRoute(route []int) []int {
 }
 
 func reconstructRoute(start, end int, previous []int) []int {
-	route := []int{}
 	prevNode := previous[end]
-	route = append(route, end, prevNode)
+	route := append([]int{}, end, prevNode)
 
 	for prevNode != start {
 		prevNode = previous[prevNode]
@@ -111,16 +99,14 @@ func reconstructRoute(start, end int, previous []int) []int {
 // DijkstraSTP implements the Dijkstra's Shortest Path algorithm.
 func DijkstraSTP(args dijkstraArgs) ([]int, int) {
 	pq := NewPriorityQueue()
-	previous := make([]int, len(args.dist))
 	visited := make([]bool, len(args.dist))
 
+	args.dist[args.start] = 0
+	args.prev[args.start] = args.start
 	heap.Push(pq, &Item{
 		node:     args.start,
 		priority: 0,
 	})
-
-	args.dist[args.start] = 0
-	previous[args.start] = args.start
 
 	for pq.Len() != 0 {
 		var nodeMinDistance *Item = heap.Pop(pq).(*Item)
@@ -138,7 +124,7 @@ func DijkstraSTP(args dijkstraArgs) ([]int, int) {
 			}
 
 			args.dist[destinationNode] = newDistance
-			previous[destinationNode] = nodeMinDistance.node
+			args.prev[destinationNode] = nodeMinDistance.node
 
 			// Lazy implementation, but better than using an update on the current
 			// PriorityQueue implementation.
@@ -155,8 +141,37 @@ func DijkstraSTP(args dijkstraArgs) ([]int, int) {
 		}
 	}
 
-	bestRoute := reconstructRoute(args.start, args.end, previous)
+	if args.prev[args.end] == -1 {
+		return []int{}, -1
+	}
+
+	bestRoute := reconstructRoute(args.start, args.end, args.prev)
 	cost := args.dist[args.end]
 
 	return bestRoute, cost
+}
+
+func findBestRoute(airports []string, routes r.Routes, boarding, destination string) (r.BestRoute, error) {
+	m := buildMapper(airports)
+	g := buildGraph(routes, m.indxs, len(m.distances))
+	args := dijkstraArgs{
+		start: m.indxs[boarding].(int),
+		end:   m.indxs[destination].(int),
+		dist:  m.distances,
+		indxs: m.indxs,
+		prev:  m.previous,
+		g:     g,
+	}
+	bestRoute, cost := DijkstraSTP(args)
+
+	if cost == maxInt || cost == -1 {
+		return r.BestRoute{}, errors.NewBestRouteNotFoundErr()
+	}
+
+	best := r.BestRoute{
+		Route: convertRouteToNamed(bestRoute, m.indxs),
+		Cost:  cost,
+	}
+
+	return best, nil
 }
