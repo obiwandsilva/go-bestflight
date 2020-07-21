@@ -10,7 +10,6 @@ import (
 	"go-bestflight/resources/file"
 	"go-bestflight/resources/repositories/routerepository"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"testing"
 	"time"
@@ -22,11 +21,7 @@ import (
 func TestComponents(t *testing.T) {
 	g := goblin.Goblin(t)
 
-	gin.SetMode(gin.TestMode)
-
-	log.Println("##############################################")
-
-	Start("3000")
+	Start("3000", gin.TestMode, nil)
 	time.Sleep(2 * time.Second)
 
 	g.Describe("Tests for the adding of new routes", func() {

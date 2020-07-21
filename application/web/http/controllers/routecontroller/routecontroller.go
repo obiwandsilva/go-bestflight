@@ -49,9 +49,6 @@ func BestRoute(ctx *gin.Context) {
 	bestRoute, err := routeservice.GetBestRoute(boarding, destination)
 
 	if err != nil {
-
-		log.Println("####", err)
-
 		if e, ok := err.(*errors.InvalidAirportErr); ok {
 			ctx.String(http.StatusBadRequest, e.Error())
 			return

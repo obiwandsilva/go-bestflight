@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 	"go-bestflight/application/web/http/routes"
+	"io"
 	"log"
 	"net/http"
-	"sync"
+	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -17,39 +18,56 @@ var (
 )
 
 // Start the http server.
-func Start(port string) {
-	var wg sync.WaitGroup
-	wg.Add(1)
+func Start(port string, mode string, loggerWriter io.Writer) {
+	gin.SetMode(mode)
+	router := gin.New()
+
+	if loggerWriter == nil {
+		router.Use(gin.Logger())
+	} else {
+		router.Use(gin.LoggerWithWriter(loggerWriter))
+	}
+
+	routes.InscribeRoutes(router)
+
+	server = &http.Server{
+		Addr:         fmt.Sprintf(":%s", port),
+		Handler:      router,
+		WriteTimeout: 5 * time.Second,
+	}
 
 	go func() {
-		router := gin.Default()
-		routes.InscribeRoutes(router)
-
-		server = &http.Server{
-			Addr:    fmt.Sprintf(":%s", port),
-			Handler: router,
-		}
-
-		wg.Done()
-
-		if err := server.ListenAndServe(); err != nil {
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("could not start the HTTP server: %v", err)
 		}
-
-		fmt.Println(fmt.Sprintf("HTTP server running on port %s...", port))
 	}()
 
-	wg.Wait()
+	message := fmt.Sprintf("HTTP server running on port %s...", port)
+	fmt.Println(message)
+	log.Println(message)
 }
 
-func Stop() {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+// GracefullShutdown allows gracefull shutdown.
+func GracefullShutdown(quitChan chan os.Signal) {
+	go func() {
+		log.Println("gracefull shutdown enabled")
 
-	defer cancel()
+		oscall := <-quitChan
 
-	log.Println("Shuting server down...")
+		log.Printf("system call:%+v", oscall)
+		log.Println("shutting server down...")
 
-	if err := server.Shutdown(ctx); err != nil {
-		log.Fatal("Server failed to shutdown:", err)
-	}
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		server.SetKeepAlivesEnabled(false)
+
+		if err := server.Shutdown(ctx); err != nil {
+			log.Fatal("erro when shuttingdown the server:", err)
+		}
+
+		log.Println("finished")
+		log.Println("press ctrl + D to exit program completely")
+		fmt.Println("\nserver shutted down. Press ctrl + D to exit program completely")
+	}()
 }
