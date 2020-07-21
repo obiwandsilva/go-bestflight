@@ -27,13 +27,10 @@ func StoreRoute(route r.Route) error {
 	return nil
 }
 
-// LoadRoutes store routes and airports from file into database and cache.
-func LoadRoutes(routes []r.Route) {
-	database.StoreRoutes(routes)
-
-	for _, route := range routes {
-		database.StoreAirport(route.Boarding)
-		database.StoreAirport(route.Destination)
-		cache.AddRoute(route)
-	}
+// StoreRouteFromFile stores routes and airports from file into database and cache.
+func StoreRouteFromFile(route r.Route) {
+	database.StoreAirport(route.Boarding)
+	database.StoreAirport(route.Destination)
+	database.StoreRoute(route)
+	cache.AddRoute(route)
 }

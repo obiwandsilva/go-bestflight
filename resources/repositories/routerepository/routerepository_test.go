@@ -82,7 +82,7 @@ func TestRoutesRepository(t *testing.T) {
 		})
 	})
 
-	g.Describe("Tests for LoadRoutes", func() {
+	g.Describe("Tests for StoreRouteFromFile", func() {
 		g.It("should successfully load routes into the database and cache", func() {
 			filePath := "test.csv"
 
@@ -121,10 +121,8 @@ func TestRoutesRepository(t *testing.T) {
 			}
 
 			for _, r := range routes {
-				file.Write(r)
+				StoreRouteFromFile(r)
 			}
-
-			LoadRoutes(routes)
 
 			cost, _ := database.GetRouteCost(routes[0].Boarding, routes[0].Destination)
 			cost2, _ := database.GetRouteCost(routes[1].Boarding, routes[1].Destination)
@@ -154,13 +152,7 @@ func TestRoutesRepository(t *testing.T) {
 			g.Assert(len(routesFromCache[routes[0].Boarding])).Equal(4)
 			g.Assert(len(routesFromCache[routes[4].Boarding])).Equal(1)
 
-			g.Assert(len(routesFromFile)).Equal(5)
-
-			g.Assert(routesFromFile[0]).Equal(routes[0])
-			g.Assert(routesFromFile[1]).Equal(routes[1])
-			g.Assert(routesFromFile[2]).Equal(routes[2])
-			g.Assert(routesFromFile[3]).Equal(routes[3])
-			g.Assert(routesFromFile[4]).Equal(routes[4])
+			g.Assert(len(routesFromFile)).Equal(0)
 
 			file.Remove()
 		})
