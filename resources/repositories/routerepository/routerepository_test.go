@@ -157,4 +157,58 @@ func TestRoutesRepository(t *testing.T) {
 			file.Remove()
 		})
 	})
+
+	g.Describe("Tests for RouteExists", func() {
+		g.It("should return true if a route has a cost stored for ir", func() {
+			filePath := "test.csv"
+
+			database.Connect()
+			database.Truncate()
+			cache.Connect()
+			cache.Truncate()
+			file.Reset(filePath)
+
+			routes := []r.Route{
+				{
+					Boarding:    "AAA",
+					Destination: "BBB",
+					Cost:        10,
+				},
+				{
+					Boarding:    "AAA",
+					Destination: "CCC",
+					Cost:        20,
+				},
+				{
+					Boarding:    "AAA",
+					Destination: "DDD",
+					Cost:        56,
+				},
+				{
+					Boarding:    "AAA",
+					Destination: "EEE",
+					Cost:        75,
+				},
+				{
+					Boarding:    "BBB",
+					Destination: "CCC",
+					Cost:        5,
+				},
+			}
+
+			for _, r := range routes {
+				StoreRoute(r)
+			}
+
+			g.Assert(RouteExists(routes[0].Boarding, routes[0].Destination)).IsTrue()
+			g.Assert(RouteExists(routes[1].Boarding, routes[1].Destination)).IsTrue()
+			g.Assert(RouteExists(routes[2].Boarding, routes[2].Destination)).IsTrue()
+			g.Assert(RouteExists(routes[3].Boarding, routes[3].Destination)).IsTrue()
+			g.Assert(RouteExists(routes[4].Boarding, routes[4].Destination)).IsTrue()
+
+			g.Assert(RouteExists("UKN", "NOW")).IsFalse()
+
+			file.Remove()
+		})
+	})
 }

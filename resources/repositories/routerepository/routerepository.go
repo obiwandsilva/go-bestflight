@@ -34,3 +34,14 @@ func StoreRouteFromFile(route r.Route) {
 	database.StoreRoute(route)
 	cache.AddRoute(route)
 }
+
+// RouteExists defines if a route is already stored or not based on a cost search.
+func RouteExists(boarding, destination string) bool {
+	cost, _ := database.GetRouteCost(boarding, destination)
+
+	if cost == -1 {
+		return false
+	}
+
+	return true
+}
