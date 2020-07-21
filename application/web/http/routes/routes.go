@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"go-bestflight/application/web/http/controllers"
+	controllers "go-bestflight/application/web/http/controllers/routecontroller"
 
 	"github.com/gin-gonic/gin"
 )
