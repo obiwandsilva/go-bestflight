@@ -329,6 +329,29 @@ func TestRouteService(t *testing.T) {
 			g.Assert(best10.Cost).Equal(25)
 		})
 
+		g.It("should return InvalidAirportErr when an airport is not stored or has invalid format", func() {
+			filePath := "test.csv"
+			defer file.Remove()
+
+			database.Connect()
+			database.Truncate()
+			cache.Connect()
+			cache.Truncate()
+			file.Reset(filePath)
+
+			for _, route := range routes {
+				err := AddNewRoute(route)
+				g.Assert(err == nil).IsTrue()
+			}
+
+			_, err := GetBestRoute("SCL", "XY")
+			g.Assert(err).Equal(errors.NewInvalidAirportErr("invalid"))
+
+			_, err = GetBestRoute("SCL", "XYZ")
+
+			g.Assert(err).Equal(errors.NewInvalidAirportErr("not registered"))
+		})
+
 		g.It("should return BestRouteNotFoundErr when a route is not possible to be found", func() {
 			filePath := "test.csv"
 			defer file.Remove()
