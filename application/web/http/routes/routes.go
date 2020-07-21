@@ -8,5 +8,6 @@ import (
 
 // InscribeRoutes ...
 func InscribeRoutes(server *gin.Engine) {
-	server.GET("/routes/best", controllers.BestRoute)
+	server.POST("/routes", controllers.AddNewRoute)
+	server.GET("/routes", controllers.BestRoute)
 }
