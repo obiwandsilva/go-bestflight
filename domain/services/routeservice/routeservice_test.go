@@ -347,7 +347,7 @@ func TestRouteService(t *testing.T) {
 			}
 
 			_, err := GetBestRoute("SCL", "XY")
-			g.Assert(err).Equal(errors.NewInvalidAirportErr("invalid"))
+			g.Assert(err).Equal(errors.NewInvalidAirportErr("malformed"))
 
 			_, err = GetBestRoute("SCL", "XYZ")
 
