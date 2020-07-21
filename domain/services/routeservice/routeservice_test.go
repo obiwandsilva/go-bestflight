@@ -32,8 +32,9 @@ func TestRouteService(t *testing.T) {
 				Cost:        1000,
 			}
 
-			err := AddNewRoute(route)
+			r, err := AddNewRoute(route)
 
+			g.Assert(r).Equal(route)
 			g.Assert(err).Equal(nil)
 
 			cost, _ := database.GetRouteCost(route.Boarding, route.Destination)
@@ -68,7 +69,7 @@ func TestRouteService(t *testing.T) {
 			boarding := strings.ToUpper(route.Boarding)
 			destination := strings.ToUpper(route.Destination)
 
-			err := AddNewRoute(route)
+			_, err := AddNewRoute(route)
 
 			g.Assert(err).Equal(nil)
 
@@ -95,7 +96,7 @@ func TestRouteService(t *testing.T) {
 				Cost:        1000,
 			}
 
-			err := AddNewRoute(route)
+			_, err := AddNewRoute(route)
 
 			g.Assert(err).Equal(errors.NewInvalidRouteErr())
 		})
@@ -116,11 +117,11 @@ func TestRouteService(t *testing.T) {
 				Cost:        1000,
 			}
 
-			err := AddNewRoute(route)
+			_, err := AddNewRoute(route)
 
 			g.Assert(err).Equal(nil)
 
-			err = AddNewRoute(route)
+			_, err = AddNewRoute(route)
 
 			g.Assert(err).Equal(errors.NewRouteAlreadyExistErr())
 		})
@@ -272,6 +273,7 @@ func TestRouteService(t *testing.T) {
 				Cost:        20,
 			},
 		}
+
 		g.It("should get the best route for every desired route", func() {
 			filePath := "test.csv"
 			defer file.Remove()
@@ -283,7 +285,7 @@ func TestRouteService(t *testing.T) {
 			file.Reset(filePath)
 
 			for _, route := range routes {
-				err := AddNewRoute(route)
+				_, err := AddNewRoute(route)
 				g.Assert(err == nil).IsTrue()
 			}
 
@@ -340,7 +342,7 @@ func TestRouteService(t *testing.T) {
 			file.Reset(filePath)
 
 			for _, route := range routes {
-				err := AddNewRoute(route)
+				_, err := AddNewRoute(route)
 				g.Assert(err == nil).IsTrue()
 			}
 
@@ -369,7 +371,7 @@ func TestRouteService(t *testing.T) {
 			})
 
 			for _, route := range newRoutes {
-				err := AddNewRoute(route)
+				_, err := AddNewRoute(route)
 				g.Assert(err == nil).IsTrue()
 			}
 

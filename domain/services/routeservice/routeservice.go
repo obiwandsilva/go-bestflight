@@ -13,7 +13,7 @@ import (
 )
 
 // AddNewRoute ...
-func AddNewRoute(route r.Route) error {
+func AddNewRoute(route r.Route) (r.Route, error) {
 	boarding := strings.ToUpper(route.Boarding)
 	destination := strings.ToUpper(route.Destination)
 	newRoute := r.Route{
@@ -24,20 +24,20 @@ func AddNewRoute(route r.Route) error {
 
 	if !validation.IsValidRoute(newRoute) {
 		log.Printf("invalid route format: %v\n", newRoute)
-		return e.NewInvalidRouteErr()
+		return r.Route{}, e.NewInvalidRouteErr()
 	}
 
 	if routerepository.RouteExists(newRoute.Boarding, newRoute.Destination) {
 		log.Printf("route already stored: %v\n", newRoute)
-		return e.NewRouteAlreadyExistErr()
+		return r.Route{}, e.NewRouteAlreadyExistErr()
 	}
 
 	err := routerepository.StoreRoute(newRoute)
 	if err != nil {
-		return errors.New("could not create resource")
+		return r.Route{}, errors.New("could not create resource")
 	}
 
-	return nil
+	return route, nil
 }
 
 // LoadRoutes from file into database and cache.
