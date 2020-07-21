@@ -1,7 +1,6 @@
 package errors
 
-import "fmt"
-
+// InvalidRouteErr define errors with route format.
 type InvalidRouteErr struct {
 	message string
 }
@@ -10,25 +9,9 @@ func (e *InvalidRouteErr) Error() string {
 	return e.message
 }
 
-func NewInvalidRouteErr(cause string) *InvalidAirport {
-	return &InvalidAirport{
-		message: fmt.Sprintf("invalid: %s", cause),
-	}
-}
-
-type InvalidAirport struct {
-	message string
-}
-
-func (e *InvalidAirport) Error() string {
-	return e.message
-}
-
-// NewInvalidAirportErr is a constructor for InvalidAirport. You can specify
-// the cause as a parameter.
-func NewInvalidAirportErr(cause string) *InvalidAirport {
-	return &InvalidAirport{
-		message: fmt.Sprintf("airport: %s", cause),
+func NewInvalidRouteErr() *InvalidRouteErr {
+	return &InvalidRouteErr{
+		message: "invalid route format",
 	}
 }
 
