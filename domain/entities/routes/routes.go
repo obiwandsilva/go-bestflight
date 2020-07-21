@@ -2,15 +2,15 @@ package routes
 
 // Route ...
 type Route struct {
-	Boarding    string
-	Destination string
-	Cost        int
+	Boarding    string `json:"boarding"`
+	Destination string `json:"destination"`
+	Cost        int    `json:"cost"`
 }
 
 // BestRoute ...
 type BestRoute struct {
-	Route string
-	Cost  int
+	Route string `json:"route"`
+	Cost  int    `json:"cost"`
 }
 
 // Connection ...
