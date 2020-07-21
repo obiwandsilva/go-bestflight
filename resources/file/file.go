@@ -48,8 +48,8 @@ func remove(filePath string) {
 	os.Remove(filePath)
 }
 
-// Only for tests.
-func truncate() {
+// Truncate must be used only for tests.
+func Truncate() {
 	os.Truncate(instance.filePath, 0)
 }
 

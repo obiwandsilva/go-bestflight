@@ -72,7 +72,7 @@ func TestFile(t *testing.T) {
 
 	g.Describe("Tests for Write", func() {
 		g.It("should successfully write to file", func() {
-			truncate()
+			Truncate()
 
 			route := r.Route{
 				Boarding:    "GRU",
@@ -91,7 +91,7 @@ func TestFile(t *testing.T) {
 		})
 
 		g.It("should successfully write to file concurrently", func() {
-			truncate()
+			Truncate()
 
 			route := r.Route{
 				Boarding:    "GRU",
@@ -166,7 +166,7 @@ func TestFile(t *testing.T) {
 
 	g.Describe("Tests for ReadFile", func() {
 		g.It("should return a list with all the written routes in the file", func() {
-			truncate()
+			Truncate()
 
 			route := r.Route{
 				Boarding:    "GRU",
