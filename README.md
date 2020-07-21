@@ -103,6 +103,15 @@ Example:
 }
 ```
 
+## Docker
+
+The application can also be executed in a container if you have `docker`. Follow the steps:
+
+ - Create a file called `input.csv` into the project root.
+ - Build the image: `docker build -t bestflight .`
+ - Run a container with an interactive tty: `docker container run --name bestflight -it -p 5000:5000 bestflight sh`
+ - Run the command: `./bestflight input.csv 5000`
+
 ## Application structure
 
 The application structure is loosely based on the model [Ports and Adapters](https://dev.to/jofisaes/hexagonal-architecture-ports-and-adapters-1h4m). In real world usage, the best way of taking advantage of this strcture is by making have use of interfaces, but since this a tiny project, I didn't feel the for it.
