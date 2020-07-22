@@ -8,13 +8,13 @@ In order to be efficient when looking for the best routes for the registered con
 
 If you have `go >= 1.13`, you can build the application using the command `go mod download` and then `go build -o bestflight cmd/bestflight/main.go `.
 
-Or you can run the pre built file bestflight in this repo with `./bestflight sourcefile.csv 5000`.
+Or you can run the pre built file `bestflight` in this repo with `./bestflight sourcefile.csv 5000`.
 
 ## Usage
 
 go-bestflight has two interface that can be used: one `cli` to get the best routes via command line and an `HTTP API` for both get the best routes and register new routes.
 
-An source file with pre-registered routes can be passed by argument. It must contain the following format:
+An source file with pre-registered routes can be passed by argument. Its content must contain the following format:
 
 ```csv
 GRU,BRC,10
@@ -30,11 +30,11 @@ When running the app, simply pass the file path as the first argument followed b
 
     ./bestflight routes.csv 5000
 
-An input will be asked:
+The file will be created if it does not exists. An input will be asked:
 
     please enter the route:
 
-Enter a desired boarding and destination in the format: `GRU-CDG`
+Enter the desired boarding and destination in the format: `GRU-CDG`
 
 An output will be given in the format: `best route: SCL - GRU - BRC > $25`
 
@@ -114,7 +114,7 @@ The application can also be executed in a container if you have `docker`. Follow
 
 ## Application structure
 
-The application structure is loosely based on the model [Ports and Adapters](https://dev.to/jofisaes/hexagonal-architecture-ports-and-adapters-1h4m). In real world usage, the best way of taking advantage of this strcture is by making have use of interfaces, but since this a tiny project, I didn't feel the for it.
+The application structure is loosely based on the model [Ports and Adapters](https://dev.to/jofisaes/hexagonal-architecture-ports-and-adapters-1h4m). In real world usage, the best way of taking advantage of this strcture is by making have use of interfaces, but since this is a small project, I didn't feel the need for it.
 
 The package structure is divided in three main components:
 
@@ -124,12 +124,12 @@ The package structure is divided in three main components:
  - **resources**: any external resource used by the services in the domain, for example. Components like repositories
         as whole (file, dbs, etc), gateways (http clients) and others.
 
-Although this project does not use databases or cache services, what is the ideal in a real world production environment, there are
-three resources in this project that simulates then on memory. They are all under resources: cache, file anddatabase.
+Although this project does not use databases or cache services, what would be the ideal in a real world production environment, there are
+three resources in this project that simulates them on memory. They are all under resources: cache, file anddatabase.
 
-The cache resource simulates the usage of a Redis-like service where we could use as a routes-structure-ready-for-search, so we could
-have an alternative option to the slow IO operations with the database.
+The cache resource simulates the use of a Redis-like service where we could use as a routes structure-ready-for-search, so we could
+have an alternative option to the slow IO operations on databases.
 
-The database is to simulate persist and more reliable data.
+The database is to simulate persistent and more reliable data.
 
 And finally the file resource to manage the input/source file used when running the application.
